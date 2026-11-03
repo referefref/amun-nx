@@ -19,7 +19,7 @@ except ImportError:
 import io
 import asyncore
 import asynchat
-import re
+import amun_re as re
 import socket
 import sys
 import random
@@ -236,7 +236,7 @@ class download_ftp(asynchat.async_chat):
                 self.commands = ["TYPE I"]
                 for filename in filename_list:
                         random_port = random.randint(int(lower_port), int(upper_port))
-                        p1 = random_port/256
+                        p1 = random_port//256
                         p2 = random_port%256
                         downPort = (p1*256)+p2
                         self.commands.append("PORT %s,%s,%s,%s,%i,%i" % (ftp_ip_list[0],ftp_ip_list[1],ftp_ip_list[2],ftp_ip_list[3],p1,p2))
@@ -309,9 +309,9 @@ class download_ftp(asynchat.async_chat):
                 try:
                         bytes = self.recv(1024)
                 except socket.error as e:
-                        if e[0]==110:
+                        if e.args[0]==110:
                                 self.log_obj.log("connection timeout (%s)" % (self._address[0]), 12, "crit", False, True)
-                        elif e[0]==111:
+                        elif e.args[0]==111:
                                 self.log_obj.log("connection refused (%s)" % (self._address[0]), 12, "crit", False, True)
                         else:
                                 self.log_obj.log("handle_read() %s %s" % (e, self._address[0]), 12, "crit", False, True)

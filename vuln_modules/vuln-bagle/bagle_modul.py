@@ -18,7 +18,7 @@ except ImportError:
 import traceback
 import io
 import sys
-import struct
+import amun_struct as struct
 import amun_logging
 import random
 import bagle_shellcodes

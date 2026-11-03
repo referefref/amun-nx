@@ -15,13 +15,27 @@ try:
 except ImportError:
 	pass
 
-from re import compile, S as reS
+from amun_re import compile, S as reS
 from urllib.parse import urlsplit, urlunparse
 from hashlib import md5
 from os import path as ospath
-from socket import inet_ntoa
-from struct import pack, unpack
-from base64 import decodestring, b64encode
+from amun_struct import pack, unpack
+from amun_compat import to_bytes, to_str
+import base64 as _base64
+from socket import inet_ntoa as _inet_ntoa
+
+
+def decodestring(data):
+	return to_str(_base64.decodebytes(to_bytes(data)))
+
+
+def inet_ntoa(data):
+	return _inet_ntoa(to_bytes(data))
+
+
+def b64encode(data):
+	return to_str(_base64.b64encode(to_bytes(data)))
+
 
 from sys import exit, stdout
 from io import StringIO
@@ -901,7 +915,7 @@ class shell_mgr:
 			lowBit = (unpack('B', payload[i])[0] - 1) ^ 0x41
 			highBit = unpack('B', payload[i+1])[0] & 0x0f
 			resultBit = lowBit | (highBit << 4)
-			decodedMessage[i/2] = pack('B',resultBit)
+			decodedMessage[i//2] = pack('B',resultBit)
 		dec_shellcode = "".join(list(decodedMessage.values()))
 
 		m = self.decodersDict['pexalphanum_bindport'].search( dec_shellcode )
@@ -943,7 +957,7 @@ class shell_mgr:
 			B = second & 0x0f
 			A = (D ^ E)
 			resultBit = (A << 4) + B
-			decodedMessage[i/2] = pack('B',resultBit)
+			decodedMessage[i//2] = pack('B',resultBit)
 		decoded_shellcode = "".join(list(decodedMessage.values()))
 		### connectback shell (reverse shell)
 		match = self.decodersDict['alpha2connback'].search( decoded_shellcode )
@@ -1801,7 +1815,7 @@ class shell_mgr:
 		if len(file_data)==0 or (extension=="MS03049" and (file_data.count('PIPE')>=2 or file_data.count('\x50\x00\x49\x00\x50\x00\x45')>=2)) or len(file_data)<100:
 			return
 		### generate md5 fingerprint of shellcode
-		hash = md5(file_data)
+		hash = md5(to_bytes(file_data))
 		digest = hash.hexdigest()
 		if extension!=None:
 			filename = "hexdumps/%s-%s-%s.hex" % (extension.strip(), digest, ownPort)
@@ -1810,7 +1824,7 @@ class shell_mgr:
 		### write hexdump to disc
 		if not ospath.exists(filename):
 			try:
-				fp = open(filename, 'a+')
+				fp = open(filename, 'a+', encoding='latin-1', newline='')
 				fp.write(file_data)
 				fp.close()
 				self.log_obj.log("(%s) no match, writing hexdump (%s :%s) - %s" % (self.attIP, digest, len(file_data), self.resultSet['vulnname']), 9, "warn", True, True)

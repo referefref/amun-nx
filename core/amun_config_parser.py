@@ -15,7 +15,7 @@ try:
 except ImportError:
 	pass
 
-import re
+import amun_re as re
 import os.path
 
 class AmunConfigParser:

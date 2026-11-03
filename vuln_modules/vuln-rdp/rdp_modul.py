@@ -15,7 +15,7 @@ try:
 except ImportError:
 	pass
 
-import struct
+import amun_struct as struct
 import amun_logging
 import random
 import rdp_shellcodes

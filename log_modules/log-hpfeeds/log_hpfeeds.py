@@ -23,7 +23,7 @@ import amun_config_parser
 import base64
 
 import os
-import struct
+import amun_struct as struct
 import hashlib
 import json
 import socket

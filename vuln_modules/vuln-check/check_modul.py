@@ -15,7 +15,7 @@ try:
 except ImportError:
         pass
 
-import struct
+import amun_struct as struct
 import random
 import check_shellcodes
 import hashlib
@@ -42,15 +42,15 @@ class vuln:
 
         def write_hexdump(self, shellcode=None, extension=None):
                 if not shellcode:
-                        hash = hashlib.sha("".join(self.shellcode))
+                        hash = hashlib.sha1("".join(self.shellcode).encode('latin-1'))
                 else:
-                        hash = hashlib.sha("".join(shellcode))
+                        hash = hashlib.sha1("".join(shellcode).encode('latin-1'))
                 if extension!=None:
                         filename = "hexdumps/%s-%s.bin" % (extension, hash.hexdigest())
                 else:
                         filename = "hexdumps/%s.bin" % (hash.hexdigest())
                 if not os.path.exists(filename):
-                        fp = open(filename, 'a+')
+                        fp = open(filename, 'a+', encoding='latin-1', newline='')
                         if not shellcode:
                                 fp.write("".join(self.shellcode))
                         else:

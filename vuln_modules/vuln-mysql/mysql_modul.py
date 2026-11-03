@@ -15,7 +15,7 @@ try:
 except ImportError:
 	pass
 
-import struct
+import amun_struct as struct
 import random
 import mysql_shellcodes
 

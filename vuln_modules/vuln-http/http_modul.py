@@ -7,7 +7,7 @@ except ImportError:
 import traceback
 import io
 import sys
-import struct
+import amun_struct as struct
 import amun_logging
 import random
 import time
@@ -24,14 +24,14 @@ class vuln(object):
 			self.welcome_message = ""
 			self.shellcode = []
 			try:
-				fp = open('http_images/logo_right.png', 'r')
-				self.logoright = fp.read()
+				fp = open('http_images/logo_right.png', 'rb')
+				self.logoright = fp.read().decode('latin-1')
 				fp.close()
 			except:
 				self.logoright = "Not available"
 			try:
-				fp = open('http_images/style.css.phpmyadmin', 'r')
-				self.stylephpmyadmin = fp.read()
+				fp = open('http_images/style.css.phpmyadmin', 'rb')
+				self.stylephpmyadmin = fp.read().decode('latin-1')
 				fp.close()
 			except:
 				self.stylephpmyadmin = "Not available"

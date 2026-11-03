@@ -39,7 +39,7 @@ class submit(object):
 			filename = "malware/md5sum/%s.bin" % (md5hash)
 			if not fexists:
 				fp = open(filename, 'a+b')
-				fp.write(file_data)
+				fp.write(file_data.encode('latin-1') if isinstance(file_data, str) else file_data)
 				fp.close()
 				self.log_obj.log("download (%s): %s (size: %i) - %s" % (downURL, md5hash, file_data_length, vulnName.replace(' Vulnerability','')), 12, "div", Log=True, display=True)
 			else:

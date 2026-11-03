@@ -15,7 +15,7 @@ try:
 except ImportError:
 	pass
 
-import struct
+import amun_struct as struct
 import random
 import msmq_shellcodes
 import amun_logging

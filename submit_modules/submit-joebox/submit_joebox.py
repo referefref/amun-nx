@@ -23,7 +23,7 @@ import mimetypes
 import urllib.parse
 import socket
 
-import re
+import amun_re as re
 
 class submit(object):
 	__slots__ = ("submit_name", "reportToEmail", "joeboxservletURL", "resultRex", "log_obj" )

@@ -1,4 +1,19 @@
-## Amun
+## Amun (amun-nx)
+
+Adapted from https://github.com/zeroq/amun by Jan Goebel (zeroq).
+
+amun-nx is a Python 3 port of Amun 0.2.3-devel (upstream master, commit 55714de, April 2019). Upstream Amun runs only on Python 2. The vulnerability modules, replies, shellcode detection and log files are unchanged; only what Python 3 needs was changed:
+
+* automated 2to3 conversion (print, exceptions, dictionaries, imports), with tab indentation expanded in the files that mixed tabs and spaces;
+* network data stays a string with one character per byte, as in Python 2: `core/amun_compat.py` decodes everything Amun receives as ISO-8859-1 and encodes everything it sends or stores the same way, `core/amun_struct.py` gives `struct` the Python 2 behaviour and `core/amun_re.py` compiles patterns with ASCII semantics;
+* binary files (hexdumps, stored samples, images served by the HTTP module) are read and written byte for byte, integer divisions use `//`, and `vuln-check` uses `hashlib.sha1` (upstream called the non-existent `hashlib.sha`);
+* new option `download_enabled` in `conf/amun.conf` (default 0 in amun-nx): with 0, Amun logs the download URL that detected shellcode points to in `logs/download.log` but does not fetch it (no HTTP, FTP or TFTP download, bind port or connect-back). Set 1 to restore upstream behaviour on an isolated, monitored sensor.
+
+Tested with Python 3.11 (Debian 12). Python 3.11 is the last release that ships the `asyncore` and `asynchat` modules Amun is built on; Python 3.12 removed them; the `pyasyncore` and `pyasynchat` packages on PyPI provide them for later versions (not tested). Start with `python3 amun_server.py` from the Amun directory.
+
+The original README follows.
+
+### Amun
 
 Amun was the first python-based low-interaction honeypot, following the concepts of Nepenthes but extending it with
 more sophisticated emulation and easier maintenance.

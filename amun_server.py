@@ -79,7 +79,7 @@ class amunServer(asynchat.async_chat):
         try:
             self.bind(self.address)
         except socket.error as e:
-            if int(e[0])==98:
+            if int(e.args[0])==98:
                 self.log_obj.log("Port already in use: IP: %s Port: %s" % (self.address[0], self.address[1]), 0, "crit", True, True)
             else:
                 print("amun_server socket error:")
@@ -235,9 +235,9 @@ def check_idle_connections(currentSockets, connection_timeout, event_dict, serve
                     if key in event_dict['initial_connections']:
                         del event_dict['initial_connections'][key]
                 except socket.error as e:
-                    if e[0]==9:
+                    if e.args[0]==9:
                         log("shutdown non-existant socket", 9, "crit", None, False)
-                    elif e[0]==107:
+                    elif e.args[0]==107:
                         log("transport endpoint is not connected", 9, "crit", None, False)
                     else:
                         log("shutdown socket error: %s (%s)" % (e, len(conn_keys)), 9, "crit", serverLogger, True)
@@ -261,6 +261,10 @@ def check_download_events(event_dict, config_dict, currentDownloads, bindports, 
             del event_dict['download'][key]
             ### check if the item is already being downloaded
             if item['dlident'] in currentDownloads:
+                continue
+            ### amun-nx: downloads (HTTP, FTP, TFTP, bind port, connect back) can be switched off
+            if not config_dict.get('download_enabled', 1):
+                log("download disabled, not fetching: %s (%s)" % (item.get('displayURL', 'None'), item.get('found', 'None')), 0, "info", divLogger['download'], False)
                 continue
             ### check for local ip address
             if item['isLocalIP']:
@@ -404,7 +408,7 @@ def check_for_succ_download_event(event_dict, suLogger, submit_modules, smLogger
             ### check file header for misc bytes
             if data_len >= 5:
                 (data, data_len) = check_file(data, data_len, suLogger)
-            hash = hashlib.md5(data)
+            hash = hashlib.md5(amun_compat.to_bytes(data))
             fname = hash.hexdigest()
             ### check if file is already stored
             fexists = False
@@ -531,13 +535,13 @@ def check_idle_bindports(bindports, bind_timeout):
                 try:
                     oSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     oSocket.connect( (ip,int(port)) )
-                    oSocket.send('local quit')
+                    oSocket.send(b'local quit')
                     oSocket.shutdown(socket.SHUT_RDWR)
                     oSocket.close()
                     if key in bindports:
                         del bindports[key]
                 except socket.error as e:
-                    if e[0]!=111:
+                    if e.args[0]!=111:
                         log("bindport close failure: %s" % (e), 0, "crit", None, True)
                     else:
                         ### connection refused -> port already closed
@@ -564,7 +568,7 @@ def check_idle_tftp_downloads(tftp_downloads, tftp_timeout):
             if difference >= tftp_timeout:
                 try:
                     oSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                    oSocket.sendto('resend', (ip, int(port)))
+                    oSocket.sendto(b'resend', (ip, int(port)))
                     oSocket.close()
                 except socket.error as e:
                     log("tftp download close failure: %s" % (e), 0, "crit", None, True)
@@ -591,12 +595,12 @@ def check_idle_ftp_downloads(ftp_downloads, ftp_timeout):
                 try:
                     oSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     oSocket.connect( (ip,int(port)) )
-                    oSocket.send('local quit')
+                    oSocket.send(b'local quit')
                     oSocket.close()
                     if key in ftp_downloads:
                         del ftp_downloads[key]
                 except socket.error as e:
-                    if e[0]!=111:
+                    if e.args[0]!=111:
                         log("ftp download close failure: %s" % (e), 0, "crit", None, True)
                     else:
                         ### connection refused -> port already closed
@@ -706,6 +710,7 @@ def checkServers(serverList, vuln_modules, divLogger, amunServerIPList, currentS
         config_dict['bindport_timeout'] = int(config.getSingleValue("bindport_timeout"))
         config_dict['tftp_retransmissions'] = int(config.getSingleValue("tftp_retransmissions"))
         config_dict['ftp_timeout'] = int(config.getSingleValue("ftp_timeout"))
+        config_dict['download_enabled'] = int(config.getSingleValue("download_enabled") or 1)
 
         n_connection_timeout = int(config.getSingleValue("connection_timeout"))
         ### get debug options
@@ -896,6 +901,7 @@ def runMain():
     config_dict['bindport_timeout'] = int(config.getSingleValue("bindport_timeout"))
     config_dict['tftp_retransmissions'] = int(config.getSingleValue("tftp_retransmissions"))
     config_dict['ftp_timeout'] = int(config.getSingleValue("ftp_timeout"))
+    config_dict['download_enabled'] = int(config.getSingleValue("download_enabled") or 1)
     log("maximum number of allowed open sockets: %s" % (config_dict['max_open_sockets']), 0, "info", None, True)
     ### Register Shellcode Decoders
     regDecode = decoders.decoders()
@@ -1105,6 +1111,8 @@ if __name__ == '__main__':
     sys.path.append("core")
     sys.path.append("shellcodes")
 
+    ### Python 3: network data is handled as latin-1 str (see core/amun_compat.py)
+    import amun_compat
     import decoders
     import amun_request_handler
     import amun_logging

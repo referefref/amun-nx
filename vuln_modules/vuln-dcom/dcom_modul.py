@@ -15,7 +15,7 @@ try:
 except ImportError:
         pass
 
-import struct
+import amun_struct as struct
 import dcom_shellcodes
 
 class vuln:

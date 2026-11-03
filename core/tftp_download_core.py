@@ -16,7 +16,7 @@ except ImportError:
 	pass
 
 import socket
-import struct
+import amun_struct as struct
 import asyncore
 import time
 import hashlib

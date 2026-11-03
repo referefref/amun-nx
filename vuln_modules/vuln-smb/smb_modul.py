@@ -16,7 +16,7 @@ except ImportError:
         pass
 
 import sys
-import struct
+import amun_struct as struct
 import random
 import smb_shellcodes
 

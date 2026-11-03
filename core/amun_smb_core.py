@@ -27,7 +27,7 @@ except ImportError:
 	pass
 
 import socket
-import struct
+import amun_struct as struct
 import sys
 import time
 import copy
@@ -192,7 +192,7 @@ class amun_smb_prot:
 		fill = ['\x00'] * 6
 		self.reply.extend(fill)
 
-		iprepr = socket.inet_aton(ownIP)
+		iprepr = socket.inet_aton(ownIP).decode('latin-1')
 		self.reply[4:8] = iprepr
 
 		self.reply[8] = '\x00'
@@ -972,7 +972,7 @@ class amun_smb_prot:
 		self.reply[255] = '\x00'
 
 		###
-		iprepr = socket.inet_aton(ownIP)
+		iprepr = socket.inet_aton(ownIP).decode('latin-1')
 		self.reply[248:252] = iprepr
 
 		###

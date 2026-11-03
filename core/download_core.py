@@ -25,7 +25,7 @@ import hashlib
 import traceback
 import base64
 import time
-import re
+import amun_re as re
 import sys
 
 import amun_logging
@@ -70,7 +70,7 @@ class download_http(asyncore.dispatcher):
                         self.connect( self._address )
                         self.active = True
                 except socket.error as e:
-                        if e[0]==111:
+                        if e.args[0]==111:
                                 self.log_obj.log("failed to connect: connection refused (%s)" % (item['host']), 12, "crit", False, False)
                         else:
                                 self.log_obj.log("failed to connect: %s (%s)" % (e, item['host']), 12, "crit", False, False)
@@ -197,11 +197,11 @@ class download_http(asyncore.dispatcher):
                         else:
                                 self.handle_close()
                 except socket.error as e:
-                        if e[0]==110:
+                        if e.args[0]==110:
                                 self.log_obj.log("connection timeout (%s)" % (self.downURL), 12, "crit", False, False)
-                        elif e[0]==111:
+                        elif e.args[0]==111:
                                 self.log_obj.log("connection refused (%s)" % (self.downURL), 12 , "crit", False, False)
-                        elif e[0]==113:
+                        elif e.args[0]==113:
                                 self.log_obj.log("no route to host (%s)" % (self.downURL), 12 , "crit", False, False)
                         else:
                                 self.log_obj.log("handle_read() %s %s" % (e, self.downURL), 12, "crit", False, True)
@@ -265,7 +265,7 @@ class download_connectback(asyncore.dispatcher):
                         self.shellemu = shellemulator.shellemulator(divLogger['shellemulator'])
                         self.buffer = self.shellemu.getShellInfoLine()
                 elif authkey!="None":
-                        self.authkey = base64.b64decode(authkey)
+                        self.authkey = base64.b64decode(authkey).decode('latin-1')
                         self.buffer = self.authkey
                 else:
                         self.buffer = ''
@@ -278,7 +278,7 @@ class download_connectback(asyncore.dispatcher):
                         self.connect( self._address )
                         self.active = True
                 except socket.error as e:
-                        if e[0]==111:
+                        if e.args[0]==111:
                                 if config_dict['verbose_logging']==1:
                                         self.log_obj.log("failed to connect: connection refused (%s)" % (item['host']), 12, "crit", True, True)
                                 else:
@@ -397,11 +397,11 @@ class download_connectback(asyncore.dispatcher):
                         else:
                                 self.handle_close()
                 except socket.error as e:
-                        if e[0]==110:
+                        if e.args[0]==110:
                                 self.log_obj.log("connection timeout (%s)" % (self.downURL) , 12, "crit", False, False)
-                        elif e[0]==111:
+                        elif e.args[0]==111:
                                 self.log_obj.log("connection refused (%s)" % (self.downURL) , 12, "crit", False, False)
-                        elif e[0]==113:
+                        elif e.args[0]==113:
                                 self.log_obj.log("no route to host (%s)" % (self.downURL) , 12, "crit", False, False)
                         else:
                                 self.log_obj.log("handle_read() %s %s" % (e, self.downURL), 12, "crit", False, True)

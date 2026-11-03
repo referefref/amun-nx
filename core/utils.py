@@ -15,8 +15,8 @@ try:
 except ImportError:
 	pass
 
-import re
-import struct
+import amun_re as re
+import amun_struct as struct
 import socket
 import subprocess
 
@@ -64,7 +64,7 @@ class utilities(object):
 	def getIPsFromDevice(self, device):
 		### "ip addr show <device>"
 		command = "ip addr show %s" % (device)
-		child = subprocess.Popen([command], shell=True, bufsize=1024, stdout=subprocess.PIPE, close_fds=True)
+		child = subprocess.Popen([command], shell=True, bufsize=1024, stdout=subprocess.PIPE, close_fds=True, universal_newlines=True)
 		line = child.stdout.readline()
 		while line:
 			line = str(line).strip()

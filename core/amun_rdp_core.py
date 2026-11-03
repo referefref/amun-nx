@@ -17,7 +17,7 @@ except ImportError:
 	pass
 
 import socket
-import struct
+import amun_struct as struct
 import sys
 import time
 import copy

@@ -24,7 +24,7 @@ import sys
 import hashlib
 import os
 import random
-import struct
+import amun_struct as struct
 from copy import copy
 
 ### core modules
@@ -170,7 +170,7 @@ class amun_reqhandler(asynchat.async_chat):
 			self.identifier = "%s%s%s%s" % (self.remote_ip,self.remote_port,self.own_ip,self.own_port)
 		except socket.error as e:
 			### 107: Transport endpoint is not connected
-			if e[0]==107:
+			if e.args[0]==107:
 				self.log_obj.log("Transport endpoint is not connected", 6, "crit", False, True)
 			else:
 				self.log_obj.log("[handle_incoming_connection] socket error: %s" % (e), 6, "crit", False, True)
@@ -261,7 +261,7 @@ class amun_reqhandler(asynchat.async_chat):
 			try:
 				bytes = self.recv(self.in_buffer_size)
 			except socket.error as e:
-				if e[0]=="110":
+				if e.args[0]=="110":
 					self.log_obj.log("connection timeout", 9, "warn", False, True)
 				else:
 					self.log_obj.log("[handle_read] socket error: %s" % (e), 9, "crit", False, True)
@@ -349,7 +349,7 @@ class amun_reqhandler(asynchat.async_chat):
 									break
 							time.sleep(.0001)
 						except socket.error as e:
-							if e[0]==11:
+							if e.args[0]==11:
 								pass
 							else:
 								self.proxyTimedOut = True
@@ -556,7 +556,7 @@ class amun_reqhandler(asynchat.async_chat):
 								break
 						time.sleep(.0001)
 					except socket.error as e:
-						if e[0]==11:
+						if e.args[0]==11:
 							pass
 						else:
 							self.proxyTimedOut = True

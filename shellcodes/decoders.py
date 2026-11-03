@@ -17,7 +17,7 @@ try:
 except ImportError:
 	pass
 
-import re
+import amun_re as re
 
 class decoders:
 	def __init__(self):
