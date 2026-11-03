@@ -18,9 +18,9 @@ except ImportError:
 import amun_logging
 import amun_config_parser
 
-import httplib
+import http.client
 import mimetypes
-import urlparse
+import urllib.parse
 import socket
 
 import re
@@ -65,16 +65,16 @@ class submit(object):
 					self.log_obj.log("could not submit sample to joebox: %s %s" % (status, reason), 12, "crit", Log=True, display=True)
 		except KeyboardInterrupt:
 			raise
-		except StandardError, e:
+		except Exception as e:
 			self.log_obj.log("could not submit sample to joebox: %s" % (e), 12, "crit", Log=True, display=True)
 		except Exception:
 			self.log_obj.log("could not submit sample to joebox", 12, "crit", Log=True, display=True)
 			import traceback
 			import sys
-			import StringIO
-			f = StringIO.StringIO()
+			import io
+			f = io.StringIO()
 			traceback.print_exc(file=f)
-			print f.getvalue()
+			print(f.getvalue())
 			sys.exit(1)
 
 	def httprequest(self, fields, files):
@@ -82,10 +82,10 @@ class submit(object):
 			raise Exception("Invalid URL, only http:// URLs are allowed: url='%s'" % (self.joeboxservletURL))
 		if  not fields or not files:
 			raise Exception("Invalid/No POST data supplied: fields='%s' files='%s'" % (fields, files))
-		(scheme, netloc, path, parameters, query, fragment) = urlparse.urlparse(self.joeboxservletURL)
+		(scheme, netloc, path, parameters, query, fragment) = urllib.parse.urlparse(self.joeboxservletURL)
 		content_type, body = self.encode_multipart_formdata(fields, files)
 
-		h = httplib.HTTPConnection(netloc)
+		h = http.client.HTTPConnection(netloc)
 		headers = {
 			'User-Agent': 'Internet Explorer',
 			'Content-Type': content_type

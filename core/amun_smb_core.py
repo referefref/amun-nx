@@ -129,7 +129,7 @@ class amun_smb_prot:
 		return
 
 	def print_message(self, data):
-		print "\n"
+		print("\n")
 		counter = 1
 		for byte in data:
 			if counter==16:
@@ -137,20 +137,20 @@ class amun_smb_prot:
 				if len(ausg) == 3:
 					list = str(ausg).split('x')
 					ausg = "%sx0%s" % (list[0],list[1])
-					print ausg
+					print(ausg)
 				else:
-					print ausg
+					print(ausg)
 				counter = 0
 			else:
 				ausg = hex(struct.unpack('B',byte)[0])
 				if len(ausg) == 3:
 					list = str(ausg).split('x')
 					ausg = "%sx0%s" % (list[0],list[1])
-					print ausg,
+					print(ausg, end=' ')
 				else:
-					print ausg,
+					print(ausg, end=' ')
 			counter += 1
-		print "\n>> Incoming Codesize: %s\n\n" % (len(data))
+		print("\n>> Incoming Codesize: %s\n\n" % (len(data)))
 		return
 
 	def checkForNetbiosSessionRequest(self, data):
@@ -222,7 +222,7 @@ class amun_smb_prot:
 					return False, data
 		except Exception as e:
 			if self.debug:
-				print e
+				print(e)
 			return False, data
 		return False, data
 
@@ -243,7 +243,7 @@ class amun_smb_prot:
 			#	return i
 			if allDialects[i] == '\x02NT LM 0.12':
 				if self.debug:
-					print ">> setting Dialect to NT LM 0.12"
+					print(">> setting Dialect to NT LM 0.12")
 				return i
 		return None
 
@@ -984,56 +984,56 @@ class amun_smb_prot:
 		try:
 			opnumber = -1
 			if self.debug:
-				print
-				print '--- SMB Write AndX ---'
+				print()
+				print('--- SMB Write AndX ---')
 			smbWordCount = message[36]
 			if self.debug:
-				print "Word Count: ",[smbWordCount]," - ",struct.unpack('!B', smbWordCount)[0]
+				print("Word Count: ",[smbWordCount]," - ",struct.unpack('!B', smbWordCount)[0])
 			lengthWordBlock = 2*struct.unpack('!B', smbWordCount)[0]
 			if self.debug:
-				print "WordsBlock Length: ",lengthWordBlock
+				print("WordsBlock Length: ",lengthWordBlock)
 			if lengthWordBlock>0:
 				wordBlock = message[37:37+lengthWordBlock]
 				if self.debug:
-					print "\tWordBlock: ",[wordBlock]," - ",len(wordBlock)
-					print "\tAndXCommand: ",[wordBlock[0]]
-					print "\tReserved: ",[wordBlock[1]]
-					print "\tAndXOffset: ",[wordBlock[2:4]]
-					print "\tFID: ",[wordBlock[4:6]]
-					print "\tOffset: ",[wordBlock[6:10]],struct.unpack('2H', wordBlock[6:10])[0]
-					print "\tReserved: ",[wordBlock[10:14]],struct.unpack('2H', wordBlock[10:14])[0]
-					print "\tWrite Mode: ",[wordBlock[14:16]],struct.unpack('H', wordBlock[14:16])[0]
-					print "\tRemaining: ",[wordBlock[16:18]],struct.unpack('H', wordBlock[16:18])[0]
-					print "\tData Length High: ",[wordBlock[18:20]],struct.unpack('H', wordBlock[18:20])[0]
-					print "\tData Length Low: ",[wordBlock[20:22]],struct.unpack('H', wordBlock[20:22])[0]
-					print "\tData Offset: ",[wordBlock[22:24]],struct.unpack('H', wordBlock[22:24])[0]
+					print("\tWordBlock: ",[wordBlock]," - ",len(wordBlock))
+					print("\tAndXCommand: ",[wordBlock[0]])
+					print("\tReserved: ",[wordBlock[1]])
+					print("\tAndXOffset: ",[wordBlock[2:4]])
+					print("\tFID: ",[wordBlock[4:6]])
+					print("\tOffset: ",[wordBlock[6:10]],struct.unpack('2H', wordBlock[6:10])[0])
+					print("\tReserved: ",[wordBlock[10:14]],struct.unpack('2H', wordBlock[10:14])[0])
+					print("\tWrite Mode: ",[wordBlock[14:16]],struct.unpack('H', wordBlock[14:16])[0])
+					print("\tRemaining: ",[wordBlock[16:18]],struct.unpack('H', wordBlock[16:18])[0])
+					print("\tData Length High: ",[wordBlock[18:20]],struct.unpack('H', wordBlock[18:20])[0])
+					print("\tData Length Low: ",[wordBlock[20:22]],struct.unpack('H', wordBlock[20:22])[0])
+					print("\tData Offset: ",[wordBlock[22:24]],struct.unpack('H', wordBlock[22:24])[0])
 					### only included in wordcount 0x0e and not in 0x0c
 					if smbWordCount == '\x0e':
-						print "\tHigh Offset: ",[wordBlock[24:28]]
+						print("\tHigh Offset: ",[wordBlock[24:28]])
 			if self.debug:
-				print "--- Data Block ---"
+				print("--- Data Block ---")
 			ByteCountPosition = 37+lengthWordBlock
 			smbByteCount = message[ByteCountPosition:ByteCountPosition+2]
 			### check for padding byte
 			if message[ByteCountPosition+2:ByteCountPosition+5] != '\x05\x00\x0b' and message[ByteCountPosition+3:ByteCountPosition+6] == '\x05\x00\x0b':
 				if self.debug:
-					print "WriteAndX with Padding"
-					print "Byte Count: ",[smbByteCount]," - ",struct.unpack('H', smbByteCount)[0]
-					print "Padding: ",[message[ByteCountPosition+2]]
+					print("WriteAndX with Padding")
+					print("Byte Count: ",[smbByteCount]," - ",struct.unpack('H', smbByteCount)[0])
+					print("Padding: ",[message[ByteCountPosition+2]])
 				smbDataBlock = message[ByteCountPosition+3:]
 			elif message[ByteCountPosition+2:ByteCountPosition+5] != '\x05\x00\x00' and message[ByteCountPosition+3:ByteCountPosition+6] == '\x05\x00\x00':
 				if self.debug:
-					print "WriteAndX with Padding"
-					print "Byte Count: ",[smbByteCount]," - ",struct.unpack('H', smbByteCount)[0]
-					print "Padding: ",[message[ByteCountPosition+2]]
+					print("WriteAndX with Padding")
+					print("Byte Count: ",[smbByteCount]," - ",struct.unpack('H', smbByteCount)[0])
+					print("Padding: ",[message[ByteCountPosition+2]])
 				smbDataBlock = message[ByteCountPosition+3:]
 			else:
 				if self.debug:
-					print "WriteAndX without Padding"
-					print "Byte Count: ",[smbByteCount]," - ",struct.unpack('H', smbByteCount)[0]
+					print("WriteAndX without Padding")
+					print("Byte Count: ",[smbByteCount]," - ",struct.unpack('H', smbByteCount)[0])
 				smbDataBlock = message[ByteCountPosition+2:]
 			if self.debug:
-				print "\tData Block: ",[smbDataBlock]," - ",len(smbDataBlock)
+				print("\tData Block: ",[smbDataBlock]," - ",len(smbDataBlock))
 			### broken header
 			if len(smbDataBlock)<10 and not self.fragmentation:
 				if len(self.fragments)>0 and len("".join(self.fragments))+len(smbDataBlock)>=10:
@@ -1042,7 +1042,7 @@ class amun_smb_prot:
 				else:
 					self.fragments.append(smbDataBlock)
 					if self.debug:
-						print "\tOut of Band (Broken Header): ",[smbDataBlock]
+						print("\tOut of Band (Broken Header): ",[smbDataBlock])
 					return opnumber, ""
 			### determine fragmentation by getting the fragmentation length field of the header part (8:10)
 			if len(smbDataBlock)>=10 and not self.fragmentation:
@@ -1051,10 +1051,10 @@ class amun_smb_prot:
 					smbDataBlock = "".join(self.fragments)
 				fragLength = struct.unpack('H', smbDataBlock[8:10])[0]
 				if self.debug:
-					print "\tFragmentationLength: ",fragLength
+					print("\tFragmentationLength: ",fragLength)
 				if len(smbDataBlock)<fragLength:
 					if self.debug:
-						print "\tFragmentation Detected (1)"
+						print("\tFragmentation Detected (1)")
 					self.fragmentation = True
 					self.fragments.append(smbDataBlock)
 					return opnumber, ""
@@ -1064,15 +1064,15 @@ class amun_smb_prot:
 						self.NUM_COUNT_ITEMS = smbDataBlock[24]
 						self.CALL_ID = smbDataBlock[12:16]
 						if self.debug:
-							print "\tCall ID: ",[self.CALL_ID]
-							print "\tNum Ctx Items: ", [self.NUM_COUNT_ITEMS], struct.unpack('B', self.NUM_COUNT_ITEMS)[0]
+							print("\tCall ID: ",[self.CALL_ID])
+							print("\tNum Ctx Items: ", [self.NUM_COUNT_ITEMS], struct.unpack('B', self.NUM_COUNT_ITEMS)[0])
 						counter = struct.unpack('B', self.NUM_COUNT_ITEMS)[0]
 						startposition = 28
 						if counter>0:
 							#### 44 byte ein item
 							for item in range(0, counter):
 								if self.debug:
-									print "\tCtx Item ",item,": ",[smbDataBlock[startposition:startposition+44]], len(smbDataBlock[startposition:startposition+44])
+									print("\tCtx Item ",item,": ",[smbDataBlock[startposition:startposition+44]], len(smbDataBlock[startposition:startposition+44]))
 								startposition += 44
 						return opnumber, smbDataBlock
 					elif smbDataBlock[2] == '\x00': # write request
@@ -1080,9 +1080,9 @@ class amun_smb_prot:
 						opnumber = struct.unpack('H', smbDataBlock[22:24])[0]
 						self.writtenBytes = copy.copy(smbDataBlock)
 						if self.debug:
-							print "\tPacketFlag: ",packetFlag
-							print "\tOperationNumber: ",opnumber
-							print "\tTotal Written Bytes: ",[self.writtenBytes],len(self.writtenBytes)
+							print("\tPacketFlag: ",packetFlag)
+							print("\tOperationNumber: ",opnumber)
+							print("\tTotal Written Bytes: ",[self.writtenBytes],len(self.writtenBytes))
 						return opnumber, smbDataBlock
 			elif self.fragmentation:
 				self.fragments.append(smbDataBlock)
@@ -1090,23 +1090,23 @@ class amun_smb_prot:
 				fragLength = struct.unpack('H', smbDataBlock[8:10])[0]
 				if len(smbDataBlock)<fragLength:
 					if self.debug:
-						print "\tFragmentation Detected: ", fragLength, " ", len(smbDataBlock)
+						print("\tFragmentation Detected: ", fragLength, " ", len(smbDataBlock))
 					return opnumber, ""
 				elif len(smbDataBlock)<3:
 					if self.debug:
-						print "\tBroken Fragmentation: ", len(smbDataBlock)
+						print("\tBroken Fragmentation: ", len(smbDataBlock))
 					self.fragmentation = False
 					self.fragments = []
 					return opnumber, ""
 				else:
 					if self.debug:
-						print "\tFragments found -> trying reassemble"
+						print("\tFragments found -> trying reassemble")
 					if len(smbDataBlock)==fragLength:
 						self.fragmentation = False
 						self.fragments = []
 					else:
 						if self.debug:
-							print "\tfound more than expected -> new fragmentation created"
+							print("\tfound more than expected -> new fragmentation created")
 						overhead = smbDataBlock[fragLength:]
 						smbDataBlock = smbDataBlock[:fragLength]
 						self.fragments = [overhead]
@@ -1115,15 +1115,15 @@ class amun_smb_prot:
 						self.NUM_COUNT_ITEMS = smbDataBlock[24]
 						self.CALL_ID = smbDataBlock[12:16]
 						if self.debug:
-							print "\tCall ID: ",[self.CALL_ID]
-							print "\tNum Ctx Items: ", [self.NUM_COUNT_ITEMS], struct.unpack('B', self.NUM_COUNT_ITEMS)[0]
+							print("\tCall ID: ",[self.CALL_ID])
+							print("\tNum Ctx Items: ", [self.NUM_COUNT_ITEMS], struct.unpack('B', self.NUM_COUNT_ITEMS)[0])
 						counter = struct.unpack('B', self.NUM_COUNT_ITEMS)[0]
 						startposition = 28
 						if counter>0:
 							#### 44 byte ein item
 							for item in range(0, counter):
 								if self.debug:
-									print "\tCtx Item ",item,": ",[smbDataBlock[startposition:startposition+44]], len(smbDataBlock[startposition:startposition+44])
+									print("\tCtx Item ",item,": ",[smbDataBlock[startposition:startposition+44]], len(smbDataBlock[startposition:startposition+44]))
 								startposition += 44
 						return opnumber, smbDataBlock
 					elif smbDataBlock[2] == '\x00': # write request
@@ -1131,18 +1131,18 @@ class amun_smb_prot:
 						opnumber = struct.unpack('H', smbDataBlock[22:24])[0]
 						self.writtenBytes = copy.copy(smbDataBlock)
 						if self.debug:
-							print "\tPacketFlag: ",packetFlag
-							print "\tOperationNumber: ",opnumber
-							print "\tTotal Written Bytes: ",[self.writtenBytes],len(self.writtenBytes)
+							print("\tPacketFlag: ",packetFlag)
+							print("\tOperationNumber: ",opnumber)
+							print("\tTotal Written Bytes: ",[self.writtenBytes],len(self.writtenBytes))
 						return opnumber, smbDataBlock
 					else:
 						if self.debug:
-							print "\tData Block: ",[smbDataBlock]," - ",len(smbDataBlock)
-							print "\tFragments: ",[self.fragments]
-							print "\tRequest Byte: ", [smbDataBlock[2]]
+							print("\tData Block: ",[smbDataBlock]," - ",len(smbDataBlock))
+							print("\tFragments: ",[self.fragments])
+							print("\tRequest Byte: ", [smbDataBlock[2]])
 						### MZ header in fragmentation
 						if self.debug and (smbDataBlock[2] == 'Z' or smbDataBlock[0] == 'M'):
-							print "\tFound MZ header of executable file -> appending"
+							print("\tFound MZ header of executable file -> appending")
 						### fixme append to shellcode?
 						self.shellcode = []
 						self.shellcode.append(smbDataBlock)
@@ -1229,43 +1229,43 @@ class amun_smb_prot:
 	def disectReadAndX(self, message):
 		try:
 			if self.debug:
-				print
-				print '--- SMB Read AndX ---'
+				print()
+				print('--- SMB Read AndX ---')
 			smbWordCount = message[36]
 			wordCount = struct.unpack('!B', smbWordCount)[0]
 			if self.debug:
-				print "Word Count: ",[smbWordCount]," - ",struct.unpack('!B', smbWordCount)[0]
+				print("Word Count: ",[smbWordCount]," - ",struct.unpack('!B', smbWordCount)[0])
 			lengthWordBlock = 2*struct.unpack('!B', smbWordCount)[0]
 			if self.debug:
-				print "WordsBlock Length: ",lengthWordBlock
+				print("WordsBlock Length: ",lengthWordBlock)
 			if lengthWordBlock>0:
 				wordBlock = message[37:37+lengthWordBlock]
 				if self.debug:
-					print "\tWordBlock: ",[wordBlock]," - ",len(wordBlock)
-					print "\tAndXCommand: ",[wordBlock[0]]
-					print "\tReserved: ",[wordBlock[1]]
-					print "\tAndXOffset: ",[wordBlock[2:4]]
-					print "\tFID: ",[wordBlock[4:6]],struct.unpack('H', wordBlock[4:6])[0]
-					print self.pipe_fid
-					print "\tOffset: ",[wordBlock[6:10]],struct.unpack('2H', wordBlock[6:10])[0]
+					print("\tWordBlock: ",[wordBlock]," - ",len(wordBlock))
+					print("\tAndXCommand: ",[wordBlock[0]])
+					print("\tReserved: ",[wordBlock[1]])
+					print("\tAndXOffset: ",[wordBlock[2:4]])
+					print("\tFID: ",[wordBlock[4:6]],struct.unpack('H', wordBlock[4:6])[0])
+					print(self.pipe_fid)
+					print("\tOffset: ",[wordBlock[6:10]],struct.unpack('2H', wordBlock[6:10])[0])
 				offset = struct.unpack('2H', wordBlock[6:10])[0]
 				if self.debug:
-					print "\tMax Count: ",[wordBlock[10:12]],struct.unpack('H', wordBlock[10:12])[0]
+					print("\tMax Count: ",[wordBlock[10:12]],struct.unpack('H', wordBlock[10:12])[0])
 				maxcount = struct.unpack('H', wordBlock[10:12])[0]
 				if self.debug:
-					print "\tMin Count: ",[wordBlock[12:14]]
-					print "\tMaxCountHigh: ",[wordBlock[14:18]]
-					print "\tRemaining: ",[wordBlock[18:20]]
-					print "\tOffsetHigh: ",[wordBlock[20:24]]
+					print("\tMin Count: ",[wordBlock[12:14]])
+					print("\tMaxCountHigh: ",[wordBlock[14:18]])
+					print("\tRemaining: ",[wordBlock[18:20]])
+					print("\tOffsetHigh: ",[wordBlock[20:24]])
 			if self.debug:
-				print "--- Data Block ---"
+				print("--- Data Block ---")
 			ByteCountPosition = 36+1+lengthWordBlock
 			smbByteCount = message[ByteCountPosition:ByteCountPosition+2]
 			if self.debug:
-				print "Byte Count: ",[smbByteCount]," - ",struct.unpack('H', smbByteCount)[0]
+				print("Byte Count: ",[smbByteCount]," - ",struct.unpack('H', smbByteCount)[0])
 			smbDataBlock = message[ByteCountPosition+2:]
 			if self.debug:
-				print "\tData Block: ",[smbDataBlock]," - ",len(smbDataBlock)
+				print("\tData Block: ",[smbDataBlock]," - ",len(smbDataBlock))
 			return wordCount, maxcount, offset
 		except KeyboardInterrupt:
 			raise
@@ -1400,10 +1400,10 @@ class amun_smb_prot:
 
 	def smbReadAndX(self, message):
 		if self.debug:
-			print ">> With CTX: ",[self.NUM_COUNT_ITEMS]
+			print(">> With CTX: ",[self.NUM_COUNT_ITEMS])
 		self.genSMBHeader(smbCommand="\x2e", pid0=message[self.SMB_PID0], pid1=message[self.SMB_PID1], mid0=message[self.SMB_MID0], mid1=message[self.SMB_MID1], uid0='\x01', uid1='\x08', tree0=message[self.SMB_TREEID0], tree1=message[self.SMB_TREEID1])
 
-		if self.pipe_fid.has_key('samr'):
+		if 'samr' in self.pipe_fid:
 			fill = ['\x00'] * 68
 		else:
 			fill = ['\x00'] * 72
@@ -1478,7 +1478,7 @@ class amun_smb_prot:
 		self.reply[82] = '\xb8'
 		self.reply[83] = '\x10'
 		### assoc group
-		if self.pipe_fid.has_key('lsarpc'):
+		if 'lsarpc' in self.pipe_fid:
 			self.reply[84] = '\xc9' # '\x46'
 			self.reply[85] = '\x3a' # '\x58'
 			self.reply[86] = '\x00'
@@ -1488,7 +1488,7 @@ class amun_smb_prot:
 			self.reply[85] = '\x28'
 			self.reply[86] = '\x00'
 			self.reply[87] = '\x00'
-		if self.pipe_fid.has_key('lsarpc'):
+		if 'lsarpc' in self.pipe_fid:
 			### scndry len
 			self.reply[88] = '\x0c'
 			self.reply[89] = '\x00'
@@ -1515,7 +1515,7 @@ class amun_smb_prot:
 			for i in range(self.num,1,-1):
 				self.reply.extend(list(self.read_data_contextitem))
 			self.reply.extend(list(self.read_last_data_contextitem))
-		elif self.pipe_fid.has_key('srvsvc'):
+		elif 'srvsvc' in self.pipe_fid:
 			### scndry len
 			self.reply[88] = '\x0d'
 			self.reply[89] = '\x00'
@@ -1535,7 +1535,7 @@ class amun_smb_prot:
 			self.reply[102] = '\x00' #
 			self.reply[103] = '\x00'
 			###CTX_Items Anzahl
-			print "HERE -> [%s]" % (self.pipe_fid)
+			print("HERE -> [%s]" % (self.pipe_fid))
 			self.reply[104] = self.NUM_COUNT_ITEMS
 			self.reply[105] = '\x00'
 			self.reply[106] = '\x00'
@@ -1543,7 +1543,7 @@ class amun_smb_prot:
 			for i in range(self.num,1,-1):
 				self.reply.extend(list(self.read_data_contextitem))
 			self.reply.extend(list(self.read_last_data_contextitem))
-		elif self.pipe_fid.has_key('samr'):
+		elif 'samr' in self.pipe_fid:
 			### scndry len
 			self.reply[88] = '\x0a'
 			self.reply[89] = '\x00'
@@ -1566,7 +1566,7 @@ class amun_smb_prot:
 			for i in range(self.num,1,-1):
 				self.reply.extend(list(self.read_data_contextitem))
 			self.reply.extend(list(self.read_last_data_contextitem))
-		elif self.pipe_fid.has_key('svcctl'):
+		elif 'svcctl' in self.pipe_fid:
 			### scndry len
 			self.reply[88] = '\x0d'
 			self.reply[89] = '\x00'
@@ -1680,34 +1680,34 @@ class amun_smb_prot:
 		try:
 			multiplexID = 0
 			if self.debug:
-				print
-				print '--- SMB Negotiation ---'
+				print()
+				print('--- SMB Negotiation ---')
 			flags2Vect = self.genBitvector(struct.unpack('H', message[self.SMB_FLAG0:self.SMB_FLAG1+1])[0], count=16)
 			if flags2Vect[1] == '1':
 				self.NTErrorCodes = True
 			else:
 				self.NTErrorCodes = False
 			if self.debug:
-				print "FlagsVector: ",flags2Vect
-				print "NT Error Codes: ",self.NTErrorCodes
+				print("FlagsVector: ",flags2Vect)
+				print("NT Error Codes: ",self.NTErrorCodes)
 			multiplexID = struct.unpack('H', message[self.SMB_MID0:self.SMB_MID1+1])[0]
 			if self.debug:
-				print "MultiplexID: ",multiplexID
+				print("MultiplexID: ",multiplexID)
 			smbWordCount = message[self.SMB_WORDCOUNT]
 			if self.debug:
-				print "Word Count: ",[smbWordCount]," - ",struct.unpack('!B', smbWordCount)[0]
+				print("Word Count: ",[smbWordCount]," - ",struct.unpack('!B', smbWordCount)[0])
 			lengthWordBlock = 2*struct.unpack('!B', smbWordCount)[0]
 			if self.debug:
-				print "WordsBlock Length: ",lengthWordBlock
+				print("WordsBlock Length: ",lengthWordBlock)
 			if lengthWordBlock>0:
 				wordBlock = message[37:37+lengthWordBlock]
 			ByteCountPosition = 36+1+lengthWordBlock
 			smbByteCount = message[ByteCountPosition:ByteCountPosition+2]
 			if self.debug:
-				print "Byte Count: ",[smbByteCount]," - ",struct.unpack('H', smbByteCount)[0]
+				print("Byte Count: ",[smbByteCount]," - ",struct.unpack('H', smbByteCount)[0])
 			smbDataBlock = message[ByteCountPosition+2:]
 			if self.debug:
-				print "Data Block: ",[smbDataBlock]," - ",len(smbDataBlock)
+				print("Data Block: ",[smbDataBlock]," - ",len(smbDataBlock))
 			return multiplexID
 		except KeyboardInterrupt:
 			raise
@@ -1850,50 +1850,50 @@ class amun_smb_prot:
 	def disectSetupAndX(self, message):
 		try:
 			if self.debug:
-				print
-				print '--- SMB Session Setup AndX ---'
+				print()
+				print('--- SMB Session Setup AndX ---')
 			smbWordCount = message[36]
 			if struct.unpack('!B', smbWordCount)[0]==12:
 				if self.debug:
-					print "\t--client supports extended security"
+					print("\t--client supports extended security")
 			if self.debug:
-				print "Word Count: ",[smbWordCount]," - ",struct.unpack('!B', smbWordCount)[0]
+				print("Word Count: ",[smbWordCount]," - ",struct.unpack('!B', smbWordCount)[0])
 			lengthWordBlock = 2*struct.unpack('!B', smbWordCount)[0]
 			if self.debug:
-				print "WordsBlock Length: ",lengthWordBlock
+				print("WordsBlock Length: ",lengthWordBlock)
 			if lengthWordBlock>0:
 				wordBlock = message[37:37+lengthWordBlock]
 				if self.debug:
-					print "\tWordBlock: ",[wordBlock]," - ",len(wordBlock)
-					print "\tAndXCommand: ",[wordBlock[0]]," - ",struct.unpack('B', wordBlock[0])[0]
-					print "\tReserved: ",[wordBlock[1]]," - ",struct.unpack('B', wordBlock[1])[0]
-					print "\tAndXOffset: ",[wordBlock[2:4]]," - ",struct.unpack('H', wordBlock[2:4])[0]
-					print "\tMaxBuffer: ",[wordBlock[4:6]]," - ",struct.unpack('H', wordBlock[4:6])[0]
-					print "\tMaxMpxCount: ",[wordBlock[6:8]]," - ",struct.unpack('H', wordBlock[6:8])[0]
-					print "\tVcNumber: ",[wordBlock[8:10]]," - ",struct.unpack('H', wordBlock[8:10])[0]
-					print "\tSessionKey: ",[wordBlock[10:14]]," - ",struct.unpack('2H', wordBlock[10:14])[0]
-					print "\tSecurityBlobLength: ",[wordBlock[14:16]]," - ",struct.unpack('H', wordBlock[14:16])[0]
+					print("\tWordBlock: ",[wordBlock]," - ",len(wordBlock))
+					print("\tAndXCommand: ",[wordBlock[0]]," - ",struct.unpack('B', wordBlock[0])[0])
+					print("\tReserved: ",[wordBlock[1]]," - ",struct.unpack('B', wordBlock[1])[0])
+					print("\tAndXOffset: ",[wordBlock[2:4]]," - ",struct.unpack('H', wordBlock[2:4])[0])
+					print("\tMaxBuffer: ",[wordBlock[4:6]]," - ",struct.unpack('H', wordBlock[4:6])[0])
+					print("\tMaxMpxCount: ",[wordBlock[6:8]]," - ",struct.unpack('H', wordBlock[6:8])[0])
+					print("\tVcNumber: ",[wordBlock[8:10]]," - ",struct.unpack('H', wordBlock[8:10])[0])
+					print("\tSessionKey: ",[wordBlock[10:14]]," - ",struct.unpack('2H', wordBlock[10:14])[0])
+					print("\tSecurityBlobLength: ",[wordBlock[14:16]]," - ",struct.unpack('H', wordBlock[14:16])[0])
 				secBloblength = struct.unpack('H', wordBlock[14:16])[0]
 				if self.debug:
-					print "\tReserved: ",[wordBlock[16:20]]
-					print "\tCapabilities: ",[wordBlock[20:24]]," - ",struct.unpack('2H', wordBlock[20:24])[0]
+					print("\tReserved: ",[wordBlock[16:20]])
+					print("\tCapabilities: ",[wordBlock[20:24]]," - ",struct.unpack('2H', wordBlock[20:24])[0])
 			if self.debug:
-				print "--- Data Block ---"
+				print("--- Data Block ---")
 			ByteCountPosition = 36+1+lengthWordBlock
 			smbByteCount = message[ByteCountPosition:ByteCountPosition+2]
 			if self.debug:
-				print "Byte Count: ",[smbByteCount]," - ",struct.unpack('H', smbByteCount)[0]
+				print("Byte Count: ",[smbByteCount]," - ",struct.unpack('H', smbByteCount)[0])
 			smbDataBlock = message[ByteCountPosition+2:]
 			if self.debug:
-				print "\tData Block: ",[smbDataBlock]," - ",len(smbDataBlock)
-				print "\tSecurityBlob[]: ",[smbDataBlock[0:0+secBloblength]]
+				print("\tData Block: ",[smbDataBlock]," - ",len(smbDataBlock))
+				print("\tSecurityBlob[]: ",[smbDataBlock[0:0+secBloblength]])
 			secBlobData = smbDataBlock[0:0+secBloblength]
 			rest = smbDataBlock[0+secBloblength:]
 			pos1 = rest.find('\x00\x00\x00')
 			if self.debug:
-				print "\tNativeOS[]: ",[rest[:pos1+1]],[rest[:pos1+1].replace('\x00','')]
-				print "\tNativeLanMan[]: ",[rest[pos1+1:]],[rest[pos1+1:].replace('\x00','')]
-				print
+				print("\tNativeOS[]: ",[rest[:pos1+1]],[rest[:pos1+1].replace('\x00','')])
+				print("\tNativeLanMan[]: ",[rest[pos1+1:]],[rest[pos1+1:].replace('\x00','')])
+				print()
 			pos1 = secBlobData.find('NTLMSSP')
 			ntlmsspBlock = secBlobData[pos1:]
 			ntlmsspNego = 0
@@ -1903,18 +1903,18 @@ class amun_smb_prot:
 			NTLMSSP_REQUEST_TARGET = 0
 			if pos1!=-1:
 				if self.debug:
-					print "\tSignature: ",[ntlmsspBlock[0:8]]
-					print "\tMessageType: ",[ntlmsspBlock[8:12]]," - ",struct.unpack('2H', ntlmsspBlock[8:12])[0]
+					print("\tSignature: ",[ntlmsspBlock[0:8]])
+					print("\tMessageType: ",[ntlmsspBlock[8:12]]," - ",struct.unpack('2H', ntlmsspBlock[8:12])[0])
 					#print "\tMessageDependent: ",[ntlmsspBlock[12:24]]
 				if struct.unpack('2H', ntlmsspBlock[8:12])[0] == 1:
 					ntlmsspNego = 1
 					if self.debug:
-						print "\t\tNTLMSSP Negotiate"
-						print "\t\tNegotiateFlags: ",[ntlmsspBlock[12:16]]
+						print("\t\tNTLMSSP Negotiate")
+						print("\t\tNegotiateFlags: ",[ntlmsspBlock[12:16]])
 					#bitv = self.genBitvector(struct.unpack('i', ntlmsspBlock[12:16])[0])[1:]
 					bitv = self.genBitvector(struct.unpack('i', ntlmsspBlock[12:16])[0], count=32)
 					if self.debug:
-						print "\t\tBitVector: ",bitv
+						print("\t\tBitVector: ",bitv)
 					try:
 						if bitv[6]=='1':
 							NTLMSSP_NEGOTIATE_VERSION = 1
@@ -1926,27 +1926,27 @@ class amun_smb_prot:
 					except:
 						pass
 					if self.debug:
-						print "\t\tDomainNameFields: ",[ntlmsspBlock[16:24]]
+						print("\t\tDomainNameFields: ",[ntlmsspBlock[16:24]])
 						#print "\t\tDomainNameMaxLen: ",[ntlmsspBlock[12:24][2:4]]," - ",struct.unpack('H', ntlmsspBlock[12:24][2:4])[0]
 						#print "\t\tDomainNameBufferOffset: ",[ntlmsspBlock[12:24][4:8]]," - ",struct.unpack('2H', ntlmsspBlock[12:24][4:8])[0]
-						print "\t\tWorkstationFields: ",[ntlmsspBlock[24:32]]
+						print("\t\tWorkstationFields: ",[ntlmsspBlock[24:32]])
 					### Only if version flag is set
 					if NTLMSSP_NEGOTIATE_VERSION:
 						if self.debug:
-							print "\t\tVersion: ",[ntlmsspBlock[32:40]]
-							print "\tPayload: ",[ntlmsspBlock[40:]]
+							print("\t\tVersion: ",[ntlmsspBlock[32:40]])
+							print("\tPayload: ",[ntlmsspBlock[40:]])
 					else:
 						if self.debug:
-							print "\tPayload: ",[ntlmsspBlock[32:]]
+							print("\tPayload: ",[ntlmsspBlock[32:]])
 				elif struct.unpack('2H', ntlmsspBlock[8:12])[0] == 3:
 					if self.debug:
-						print "\t\tNTLMSSP Challenge Response"
+						print("\t\tNTLMSSP Challenge Response")
 					ntlmsspChallenge = 1
 			else:
 				if struct.unpack('H', smbByteCount)[0]>len(secBlobData):
 					self.vulnName = "MS04007 (ASN1)"
-				print ">> ntlmssp not found"
-				print [secBlobData],len(secBlobData)
+				print(">> ntlmssp not found")
+				print([secBlobData],len(secBlobData))
 			return ntlmsspNego, ntlmsspChallenge, NTLMSSP_NEGOTIATE_VERSION, NTLMSSP_NEGOTIATE_TARGET_INFO, NTLMSSP_REQUEST_TARGET
 		except KeyboardInterrupt:
 			raise
@@ -2108,34 +2108,34 @@ class amun_smb_prot:
 	def disectTreeAndx(self, message):
 		try:
 			if self.debug:
-				print
-				print '--- SMB Tree AndX Connect ---'
+				print()
+				print('--- SMB Tree AndX Connect ---')
 			smbWordCount = message[36]
 			if self.debug:
-				print "Word Count: ",[smbWordCount]," - ",struct.unpack('!B', smbWordCount)[0]
+				print("Word Count: ",[smbWordCount]," - ",struct.unpack('!B', smbWordCount)[0])
 			lengthWordBlock = 2*struct.unpack('!B', smbWordCount)[0]
 			if self.debug:
-				print "WordsBlock Length: ",lengthWordBlock
+				print("WordsBlock Length: ",lengthWordBlock)
 			if lengthWordBlock>0:
 				wordBlock = message[37:37+lengthWordBlock]
 				if self.debug:
-					print "\tWordBlock: ",[wordBlock]," - ",len(wordBlock)
-					print "\tAndXCommand: ",[wordBlock[0]]
-					print "\tReserved: ",[wordBlock[1]]
-					print "\tAndXOffset: ",[wordBlock[2:4]]
-					print "\tFlags: ",[wordBlock[4:6]]
-					print "\tPasswordLength: ",[wordBlock[6:8]],struct.unpack('H', wordBlock[6:8])[0]
+					print("\tWordBlock: ",[wordBlock]," - ",len(wordBlock))
+					print("\tAndXCommand: ",[wordBlock[0]])
+					print("\tReserved: ",[wordBlock[1]])
+					print("\tAndXOffset: ",[wordBlock[2:4]])
+					print("\tFlags: ",[wordBlock[4:6]])
+					print("\tPasswordLength: ",[wordBlock[6:8]],struct.unpack('H', wordBlock[6:8])[0])
 				passLen = struct.unpack('H', wordBlock[6:8])[0]
 			if self.debug:
-				print "--- Data Block ---"
+				print("--- Data Block ---")
 			ByteCountPosition = 36+1+lengthWordBlock
 			smbByteCount = message[ByteCountPosition:ByteCountPosition+2]
 			if self.debug:
-				print "Byte Count: ",[smbByteCount]," - ",struct.unpack('H', smbByteCount)[0]
+				print("Byte Count: ",[smbByteCount]," - ",struct.unpack('H', smbByteCount)[0])
 			smbDataBlock = message[ByteCountPosition+2:]
 			if self.debug:
-				print "\tData Block: ",[smbDataBlock]," - ",len(smbDataBlock)
-				print "\tPassword[]: ",[smbDataBlock[0:0+passLen]]
+				print("\tData Block: ",[smbDataBlock]," - ",len(smbDataBlock))
+				print("\tPassword[]: ",[smbDataBlock[0:0+passLen]])
 			rest = smbDataBlock[passLen:].split('\x00')
 			path = []
 			counter = 0
@@ -2146,13 +2146,13 @@ class amun_smb_prot:
 					path.append(item)
 				counter +=1
 			if self.debug:
-				print "\tPath[]: ",["".join(path)]
+				print("\tPath[]: ",["".join(path)])
 			rest = rest[counter:]
 			service = []
 			for item in rest:
 				service.append(item)
 			if self.debug:
-				print "\tService[]: ",["".join(service)]
+				print("\tService[]: ",["".join(service)])
 			return "".join(path)
 		except KeyboardInterrupt:
 			raise
@@ -2288,51 +2288,51 @@ class amun_smb_prot:
 	def disectNtCreateAndX(self, message):
 		try:
 			if self.debug:
-				print
-				print '--- SMB NT Create AndX  ---'
+				print()
+				print('--- SMB NT Create AndX  ---')
 			smbWordCount = message[36]
 			if self.debug:
-				print "Word Count: ",[smbWordCount]," - ",struct.unpack('!B', smbWordCount)[0]
+				print("Word Count: ",[smbWordCount]," - ",struct.unpack('!B', smbWordCount)[0])
 			lengthWordBlock = 2*struct.unpack('!B', smbWordCount)[0]
 			if self.debug:
-				print "WordsBlock Length: ",lengthWordBlock
+				print("WordsBlock Length: ",lengthWordBlock)
 			if lengthWordBlock>0:
 				wordBlock = message[37:37+lengthWordBlock]
 				if self.debug:
-					print "\tWordBlock: ",[wordBlock]," - ",len(wordBlock)
-					print "\tAndXCommand: ",[wordBlock[0]]
-					print "\tReserved: ",[wordBlock[1]]
-					print "\tAndXOffset: ",[wordBlock[2:4]],struct.unpack('H', wordBlock[2:4])[0]
+					print("\tWordBlock: ",[wordBlock]," - ",len(wordBlock))
+					print("\tAndXCommand: ",[wordBlock[0]])
+					print("\tReserved: ",[wordBlock[1]])
+					print("\tAndXOffset: ",[wordBlock[2:4]],struct.unpack('H', wordBlock[2:4])[0])
 				oversizedAndXOffset = struct.unpack('H', wordBlock[2:4])[0]
 				if self.debug:
-					print "\tReserved: ",[wordBlock[4]]
-					print "\tNameLength: ",[wordBlock[5:7]],struct.unpack('H', wordBlock[5:7])[0]
-					print "\tFlags: ",[wordBlock[7:11]]
-					print "\tRootDirFid: ",[wordBlock[11:15]]
-					print "\tAccessMask: ",[wordBlock[15:19]]
-					print "\tAllocationSize: ",[wordBlock[19:27]]
-					print "\tExtFileAttr: ",[wordBlock[27:31]]
-					print "\tShareAccess: ",[wordBlock[31:35]]
-					print "\tCreateDisposition: ",[wordBlock[35:39]]
-					print "\tCreateOptions: ",[wordBlock[39:43]],struct.unpack('2H', wordBlock[39:43])[0]
+					print("\tReserved: ",[wordBlock[4]])
+					print("\tNameLength: ",[wordBlock[5:7]],struct.unpack('H', wordBlock[5:7])[0])
+					print("\tFlags: ",[wordBlock[7:11]])
+					print("\tRootDirFid: ",[wordBlock[11:15]])
+					print("\tAccessMask: ",[wordBlock[15:19]])
+					print("\tAllocationSize: ",[wordBlock[19:27]])
+					print("\tExtFileAttr: ",[wordBlock[27:31]])
+					print("\tShareAccess: ",[wordBlock[31:35]])
+					print("\tCreateDisposition: ",[wordBlock[35:39]])
+					print("\tCreateOptions: ",[wordBlock[39:43]],struct.unpack('2H', wordBlock[39:43])[0])
 				createOptions = struct.unpack('2H', wordBlock[39:43])[0]
 				if self.debug:
-					print "\tImpersonationLevel: ",[wordBlock[43:47]]
-					print "\tSecurityFlags: ",[wordBlock[47]]
+					print("\tImpersonationLevel: ",[wordBlock[43:47]])
+					print("\tSecurityFlags: ",[wordBlock[47]])
 			if self.debug:
-				print "--- Data Block ---"
+				print("--- Data Block ---")
 			ByteCountPosition = 36+1+lengthWordBlock
 			smbByteCount = message[ByteCountPosition:ByteCountPosition+2]
 			if self.debug:
-				print "Byte Count: ",[smbByteCount]," - ",struct.unpack('H', smbByteCount)[0]
+				print("Byte Count: ",[smbByteCount]," - ",struct.unpack('H', smbByteCount)[0])
 			smbDataBlock = message[ByteCountPosition+2:]
 			if self.debug:
-				print "\tData Block: ",[smbDataBlock]," - ",len(smbDataBlock)
+				print("\tData Block: ",[smbDataBlock]," - ",len(smbDataBlock))
 			nameToOpen = smbDataBlock.replace('\x00','').replace('\\','')
 			if self.debug:
-				print ">> BIND TO: ",[nameToOpen]
+				print(">> BIND TO: ",[nameToOpen])
 			if self.debug:
-				print "\tName[]: ",[smbDataBlock],[smbDataBlock.replace('\x00','')]
+				print("\tName[]: ",[smbDataBlock],[smbDataBlock.replace('\x00','')])
 			return nameToOpen, createOptions, oversizedAndXOffset
 		except KeyboardInterrupt:
 			raise
@@ -2419,18 +2419,18 @@ class amun_smb_prot:
 	def disectSMBClose(self, message):
 		try:
 			if self.debug:
-				print
-				print '--- SMB Close ---'
+				print()
+				print('--- SMB Close ---')
 			smbWordCount = message[36]
 			if self.debug:
-				print "Word Count: ",[smbWordCount]," - ",struct.unpack('!B', smbWordCount)[0]
+				print("Word Count: ",[smbWordCount]," - ",struct.unpack('!B', smbWordCount)[0])
 			lengthWordBlock = 2*struct.unpack('!B', smbWordCount)[0]
 			if self.debug:
-				print "WordsBlock Length: ",lengthWordBlock
+				print("WordsBlock Length: ",lengthWordBlock)
 			if lengthWordBlock>0:
 				wordBlock = message[37:37+lengthWordBlock]
 				if self.debug:
-					print "\tWordBlock: ",[wordBlock]," - ",len(wordBlock)
+					print("\tWordBlock: ",[wordBlock]," - ",len(wordBlock))
 				fid = struct.unpack('H', wordBlock[0:2])[0]
 			#ByteCountPosition = 36+1+lengthWordBlock
 			#smbByteCount = message[ByteCountPosition:ByteCountPosition+2]
@@ -2449,7 +2449,7 @@ class amun_smb_prot:
 		killFID = self.disectSMBClose(message)
 
 		#print ">> REMOVING TREE CONNECT FID: ", killFID
-		fidKeys = self.pipe_fid.keys()
+		fidKeys = list(self.pipe_fid.keys())
 		for key in fidKeys:
 			if self.pipe_fid[key] == killFID:
 				#print ">> REMOVING ..."
@@ -2472,117 +2472,117 @@ class amun_smb_prot:
 	def disectTransaction(self, message):
 		try:
 			if self.debug:
-				print
-				print '--- SMB Transaction ---'
+				print()
+				print('--- SMB Transaction ---')
 			smbWordCount = message[36]
 			if self.debug:
-				print "Word Count: ",[smbWordCount]," - ",struct.unpack('!B', smbWordCount)[0]
+				print("Word Count: ",[smbWordCount]," - ",struct.unpack('!B', smbWordCount)[0])
 			lengthWordBlock = 2*struct.unpack('!B', smbWordCount)[0]
 			if self.debug:
-				print "WordsBlock Length: ",lengthWordBlock
+				print("WordsBlock Length: ",lengthWordBlock)
 			if lengthWordBlock>0:
 				wordBlock = message[37:37+lengthWordBlock]
 				if self.debug:
-					print "\tWordBlock: ",[wordBlock]," - ",len(wordBlock)
-					print "\tTotalParamCount: ",[wordBlock[0:2]]
-					print "\tTotalDataCount: ",[wordBlock[2:4]]," - ",struct.unpack('H', wordBlock[2:4])[0]
-					print "\tMaxParameterCount: ",[wordBlock[4:6]]
-					print "\tMaxDataCount: ",[wordBlock[6:8]]," - ",struct.unpack('H', wordBlock[6:8])[0]
-					print "\tMaxSetupCount: ",[wordBlock[8:10]]
-					print "\tFlags: ",[wordBlock[10:12]]
-					print "\tTimeout: ",[wordBlock[12:16]]
-					print "\tReserved: ",[wordBlock[16:18]]," - ",struct.unpack('H', wordBlock[16:18])[0]
-					print "\tParameterCount: ",[wordBlock[18:20]]," - ",struct.unpack('H', wordBlock[18:20])[0]
+					print("\tWordBlock: ",[wordBlock]," - ",len(wordBlock))
+					print("\tTotalParamCount: ",[wordBlock[0:2]])
+					print("\tTotalDataCount: ",[wordBlock[2:4]]," - ",struct.unpack('H', wordBlock[2:4])[0])
+					print("\tMaxParameterCount: ",[wordBlock[4:6]])
+					print("\tMaxDataCount: ",[wordBlock[6:8]]," - ",struct.unpack('H', wordBlock[6:8])[0])
+					print("\tMaxSetupCount: ",[wordBlock[8:10]])
+					print("\tFlags: ",[wordBlock[10:12]])
+					print("\tTimeout: ",[wordBlock[12:16]])
+					print("\tReserved: ",[wordBlock[16:18]]," - ",struct.unpack('H', wordBlock[16:18])[0])
+					print("\tParameterCount: ",[wordBlock[18:20]]," - ",struct.unpack('H', wordBlock[18:20])[0])
 				paramCount = struct.unpack('H', wordBlock[18:20])[0]
 				if self.debug:
-					print "\tParameterOffset: ",[wordBlock[20:22]]," - ",struct.unpack('H', wordBlock[20:22])[0]
+					print("\tParameterOffset: ",[wordBlock[20:22]]," - ",struct.unpack('H', wordBlock[20:22])[0])
 				paramOffSet = struct.unpack('H', wordBlock[20:22])[0]
 				if self.debug:
-					print "\tDataCount: ",[wordBlock[22:24]]," - ",struct.unpack('H', wordBlock[22:24])[0]
+					print("\tDataCount: ",[wordBlock[22:24]]," - ",struct.unpack('H', wordBlock[22:24])[0])
 				dataCount = struct.unpack('H', wordBlock[22:24])[0]
 				if self.debug:
-					print "\tDataOffset: ",[wordBlock[24:26]]," - ",struct.unpack('H', wordBlock[24:26])[0]
+					print("\tDataOffset: ",[wordBlock[24:26]]," - ",struct.unpack('H', wordBlock[24:26])[0])
 				dataOffSet = struct.unpack('H', wordBlock[24:26])[0]
 				if self.debug:
-					print "\tSetupCount: ",[wordBlock[26:27]]," - ",struct.unpack('B', wordBlock[26:27])[0]
+					print("\tSetupCount: ",[wordBlock[26:27]]," - ",struct.unpack('B', wordBlock[26:27])[0])
 				setupCountVal = struct.unpack('B', wordBlock[26:27])[0]
 				if setupCountVal == 2:
 					if self.debug:
-						print "\t\tNamed Pipe Transaction"
+						print("\t\tNamed Pipe Transaction")
 				if self.debug:
-					print "\tReserved: ",[wordBlock[27:28]]," - ",struct.unpack('B', wordBlock[27:28])[0]
-					print "\tSetup[]",[wordBlock[28:]]
+					print("\tReserved: ",[wordBlock[27:28]]," - ",struct.unpack('B', wordBlock[27:28])[0])
+					print("\tSetup[]",[wordBlock[28:]])
 				setupBlock = wordBlock[28:]
 				if setupCountVal == 2 and setupBlock[0] == '\x01':
 					if self.debug:
-						print "\t\tSet Pipe Handle Modes"
+						print("\t\tSet Pipe Handle Modes")
 				elif len(setupBlock)>0 and setupBlock[0] == '\x26':
 					if self.debug:
-						print "\t\tTransactNmPipe 0x26 write/read operation on pipe requested"
+						print("\t\tTransactNmPipe 0x26 write/read operation on pipe requested")
 				else:
 					if self.debug:
-						print "\t\tWrong or Missing SetupBlock (%s)" % ([setupBlock])
+						print("\t\tWrong or Missing SetupBlock (%s)" % ([setupBlock]))
 			ByteCountPosition = 36+1+lengthWordBlock
 			smbByteCount = message[ByteCountPosition:ByteCountPosition+2]
 			actualDataBytes = struct.unpack('H', smbByteCount)[0] - dataCount
 			if self.debug:
-				print "Byte Count: ",[smbByteCount]," - ",struct.unpack('H', smbByteCount)[0]
+				print("Byte Count: ",[smbByteCount]," - ",struct.unpack('H', smbByteCount)[0])
 			smbDataBlock = message[ByteCountPosition+2:actualDataBytes]
 			if self.debug:
-				print "\tData Block: ",[smbDataBlock]," - ",len(smbDataBlock)
-				print "\tName[]: ",[message[ByteCountPosition+2:paramOffSet]]
-				print "\tParameters[]: ",[message[paramOffSet:paramOffSet+paramCount]]," - ",len(message[paramOffSet:paramOffSet+paramCount])
+				print("\tData Block: ",[smbDataBlock]," - ",len(smbDataBlock))
+				print("\tName[]: ",[message[ByteCountPosition+2:paramOffSet]])
+				print("\tParameters[]: ",[message[paramOffSet:paramOffSet+paramCount]]," - ",len(message[paramOffSet:paramOffSet+paramCount]))
 				### Data[] equals DataCount bytes
-				print "\tData[]: ",[message[dataOffSet:dataOffSet+dataCount]]," - ",len(message[dataOffSet:dataOffSet+dataCount])
+				print("\tData[]: ",[message[dataOffSet:dataOffSet+dataCount]]," - ",len(message[dataOffSet:dataOffSet+dataCount]))
 				#print self.pipe_fid
-				if len(message[dataOffSet:dataOffSet+dataCount])>=940 and struct.unpack('H', message[ByteCountPosition+2+actualDataBytes:][22:24])[0]==9 and self.pipe_fid.has_key('lsarpc'):
+				if len(message[dataOffSet:dataOffSet+dataCount])>=940 and struct.unpack('H', message[ByteCountPosition+2+actualDataBytes:][22:24])[0]==9 and 'lsarpc' in self.pipe_fid:
 					self.vulnName = 'MS04011 (LSASS)'
 					self.NextReadWithError = True
 			rest = message[ByteCountPosition+2+actualDataBytes:]
 			if len(rest)>=24 and not self.fragmentation:
 				if self.debug:
-					print "\t\tDCERPC Version ",[rest[0:2]]
-					print "\t\tPacket Type: ",[rest[2]]
+					print("\t\tDCERPC Version ",[rest[0:2]])
+					print("\t\tPacket Type: ",[rest[2]])
 				DCEpacketType = rest[2]
 				fragLength = struct.unpack('H', rest[8:10])[0]
 				if self.debug:
-					print "\t\tPacket Flags: ",[rest[3]]
-					print "\t\tData Representation: ",[rest[4:8]]
-					print "\t\tFrag Length: ",[rest[8:10]]
-					print "\t\tAuth Length: ",[rest[12:12]]
-					print "\t\tCall ID: ",[rest[12:16]]
+					print("\t\tPacket Flags: ",[rest[3]])
+					print("\t\tData Representation: ",[rest[4:8]])
+					print("\t\tFrag Length: ",[rest[8:10]])
+					print("\t\tAuth Length: ",[rest[12:12]])
+					print("\t\tCall ID: ",[rest[12:16]])
 				callid = rest[12:16]
 				if self.debug:
-					print "\t\tAlloc Hint: ",[rest[16:20]]
-					print "\t\tContext ID: ",[rest[20:22]]
-					print "\t\tOpnum: ",[rest[22:24]],struct.unpack('H', rest[22:24])[0]
+					print("\t\tAlloc Hint: ",[rest[16:20]])
+					print("\t\tContext ID: ",[rest[20:22]])
+					print("\t\tOpnum: ",[rest[22:24]],struct.unpack('H', rest[22:24])[0])
 				opnumber = struct.unpack('H', rest[22:24])[0]
 				if self.debug:
 					if DCEpacketType=='\x00' and opnumber == 0:
-						print "\t\tlsa_Close"
+						print("\t\tlsa_Close")
 					elif DCEpacketType=='\x00' and opnumber == 6:
-						print "\t\tlsa_OpenPolicy"
+						print("\t\tlsa_OpenPolicy")
 					elif DCEpacketType=='\x00' and opnumber == 7:
-						print "\t\tlsa_QueryInfoPolicy"
+						print("\t\tlsa_QueryInfoPolicy")
 					elif DCEpacketType=='\x00' and opnumber == 9:
-						print "\t\tDsRoleUpgradeDownlevelServer"
+						print("\t\tDsRoleUpgradeDownlevelServer")
 					elif DCEpacketType=='\x00' and opnumber == 27:
-						print "\t\tOpenSCManagerA"
+						print("\t\tOpenSCManagerA")
 					elif DCEpacketType=='\x00' and opnumber == 31:
-						print "\t\tNetPathCanonicalize"
+						print("\t\tNetPathCanonicalize")
 					elif DCEpacketType=='\x00' and opnumber == 32:
-						print "\t\tNetPathCompare"
+						print("\t\tNetPathCompare")
 					elif DCEpacketType=='\x00' and opnumber == 54:
-						print "\t\tPNP_QueryResConfList"
+						print("\t\tPNP_QueryResConfList")
 					elif DCEpacketType=='\x00' and opnumber == 62:
-						print "\t\tConnect4"
+						print("\t\tConnect4")
 					elif DCEpacketType=='\x00' and opnumber == 64:
-						print "\t\tConnect5"
+						print("\t\tConnect5")
 				if len(rest)>=fragLength:
 					return setupCountVal, DCEpacketType, opnumber, callid
 				else:
 					if self.debug:
-						print "\tTransaction Fragmentation Detected"
+						print("\tTransaction Fragmentation Detected")
 					self.fragmentation = True
 					self.fragments.append(rest)
 					return setupCountVal, None, -1, None
@@ -2592,7 +2592,7 @@ class amun_smb_prot:
 				fragLength = struct.unpack('H', rest[8:10])[0]
 				if len(rest)>=fragLength:
 					if self.debug:
-						print "\tTransaction Fragmentation Finished"
+						print("\tTransaction Fragmentation Finished")
 					self.fragmentation = False
 					self.fragments = []
 					DCEpacketType = rest[2]
@@ -3080,7 +3080,7 @@ class amun_smb_prot:
 		self.reply[89] = "\x50"
 		self.reply[90] = "\x45"
 		self.reply[91] = "\x5c"
-		if self.pipe_fid.has_key('lsarpc'):
+		if 'lsarpc' in self.pipe_fid:
 			self.reply[92] = "\x6c" # l
 			self.reply[93] = "\x73" # s
 			self.reply[94] = "\x61" # a
@@ -3161,7 +3161,7 @@ class amun_smb_prot:
 				return "".join(self.reply), 'shellcode'
 			elif opnumber == -2:
 				if self.debug:
-					print "shellcode contains executable"
+					print("shellcode contains executable")
 				self.vulnName = "SMB File Upload"
 				return "".join(self.reply), 'shellcode'
 			else:
@@ -3184,13 +3184,13 @@ class amun_smb_prot:
 			return None, None
 		elif len(data)<10:
 			if self.showRequests:
-				print ">> received too short data (<10)"
-				print [data]
+				print(">> received too short data (<10)")
+				print([data])
 			return None, None
 		elif len(data)<35:
 			if self.showRequests:
-				print ">> received too short data (<35)"
-				print [data]
+				print(">> received too short data (<35)")
+				print([data])
 			if self.fragmentation:
 				self.fragments.append(data)
 				return None, 'noreply'
@@ -3198,12 +3198,12 @@ class amun_smb_prot:
 		### check for netbios session request packet
 		if self.checkForNetbiosSessionRequest(data):
 			if self.showRequests:
-				print ">> received netbios session request"
+				print(">> received netbios session request")
 			self.NetbiosSessionReply(data)
 			return "".join(self.reply), None
 		elif self.checkForNetbiosSessionRetargetRequest(data):
 			if self.showRequests:
-				print ">> received netbios session retarget request"
+				print(">> received netbios session retarget request")
 			self.NetbiosRetargetReply(data, ownIP)
 			return "".join(self.reply), None
 		### check smb packet
@@ -3212,22 +3212,22 @@ class amun_smb_prot:
 			commandByte = data[8]
 			if commandByte == '\x72':
 				if self.showRequests:
-					print ">> received smb negotiate request", len(data)
+					print(">> received smb negotiate request", len(data))
 				multiplexID = self.disectNegotiateRequest(data)
 				dialectIndex = self.getsmbNegotInfo(data)
 				if self.debug:
-					print "MutliplexID: %s" % (multiplexID)
-					print "DialectIndex: %s" % (dialectIndex)
+					print("MutliplexID: %s" % (multiplexID))
+					print("DialectIndex: %s" % (dialectIndex))
 				if multiplexID!=0:
 					self.NegotiationReply(data, dialectIndex)
 				else:
 					if self.debug:
-						print "Anonymous Negotiation Reply"
+						print("Anonymous Negotiation Reply")
 					self.NegotiationReplyAnonymous(data, dialectIndex)
 				return "".join(self.reply), None
 			elif commandByte == '\x73':
 				if self.showRequests:
-					print ">> received session setup andX request", len(data)
+					print(">> received session setup andX request", len(data))
 				### check client for security capability
 				if data[36] == '\x0c':
 					self.SessionSetupAndX(data, ownIP)
@@ -3240,45 +3240,45 @@ class amun_smb_prot:
 					return "".join(self.reply), None
 			elif commandByte == '\x75':
 				if self.showRequests:
-					print ">> received tree connect andX request", len(data)
+					print(">> received tree connect andX request", len(data))
 				self.TreeConnectAndX(data)
 				return "".join(self.reply), None
 			elif commandByte == '\xa2':
 				if self.showRequests:
-					print ">> received nt create andX request", len(data)
+					print(">> received nt create andX request", len(data))
 				self.NTCreateAndX(data)
 				return "".join(self.reply), None
 			elif commandByte == '\x25' or commandByte == '\x32':
 				setupCountVal, packetType, opnumber, callid = self.disectTransaction(data)
 				if packetType=='\x00' and opnumber == 6:
 					if self.showRequests:
-						print ">> received lsa_openpolicy request"
+						print(">> received lsa_openpolicy request")
 					self.lsaOpenPolicy(data, callid)
 					return "".join(self.reply), None
 				elif packetType=='\x00' and opnumber == 7:
 					if self.showRequests:
-						print ">> received lsa_queryinfopolicy request"
+						print(">> received lsa_queryinfopolicy request")
 					self.lsaQueryInfoPolicy(data, callid)
 					return "".join(self.reply), None
 				elif packetType=='\x00' and opnumber == 0:
 					if self.showRequests:
-						print ">> received lsa_close request"
+						print(">> received lsa_close request")
 					self.lsaClose(data, callid)
 					return "".join(self.reply), None
 				if setupCountVal == 2 and packetType == '\x0b':
 					if self.showRequests:
-						print ">> received set named pipe handle state (BIND)"
+						print(">> received set named pipe handle state (BIND)")
 					self.SetNamedPipeHandleState(data, callid)
 					return "".join(self.reply), None
 				else:
 					if packetType == '\x0b':
 						if self.showRequests:
-							print ">> received smb transaction bind request", len(data)
+							print(">> received smb transaction bind request", len(data))
 						self.smbTransaction(data, callid)
 						return "".join(self.reply), None
 					elif packetType == '\x00':
 						if self.showRequests:
-							print ">> received smb lookup request", len(data)
+							print(">> received smb lookup request", len(data))
 						self.smbLookUpReq(data, ownIP, callid)
 						messageData = self.getContent(data)
 						return self.checkOperationNumber(opnumber, messageData)
@@ -3287,37 +3287,37 @@ class amun_smb_prot:
 						return "".join(self.reply), None
 					else:
 						if self.showRequests:
-							print ">> Unknown SMB Packet Type Request: %s" % ([packetType])
-							print ">> %s" % ([data])
+							print(">> Unknown SMB Packet Type Request: %s" % ([packetType]))
+							print(">> %s" % ([data]))
 						return None, None
 			elif commandByte == '\x2f':
 				if self.showRequests:
-					print ">> received smb write andx request", len(data)
+					print(">> received smb write andx request", len(data))
 				opnumber, smbDataBlock = self.disectWriteAndX(data)
 				self.WriteAndX(data)
 				return self.checkOperationNumber(opnumber, smbDataBlock)
 			elif commandByte == '\x2e':
 				if self.showRequests:
-					print ">> received smb read andx request", len(data)
+					print(">> received smb read andx request", len(data))
 				wordCount, maxcount, offset = self.disectReadAndX(data)
 				if self.vulnName == "MS08067 (NetAPI)":
 					self.smbReadAndX2(data)
 				else:
 					### if amount of written data equals data to read
 					if self.debug:
-						print "MaxCount: ",maxcount
-						print "AndXRead: ",self.readAndXOffset
-						print "Wr Bytes: ",len(self.writtenBytes)
-						print "Items: ",[self.NUM_COUNT_ITEMS]
-						print "Fragm.: ",self.fragmentation
+						print("MaxCount: ",maxcount)
+						print("AndXRead: ",self.readAndXOffset)
+						print("Wr Bytes: ",len(self.writtenBytes))
+						print("Items: ",[self.NUM_COUNT_ITEMS])
+						print("Fragm.: ",self.fragmentation)
 					if self.NextReadWithError:
 						if self.debug:
-							print ">> reply with broken pipe"
+							print(">> reply with broken pipe")
 						self.NextReadWithError = False
 						self.ReadAndXBrokenPipe(data)
 					elif (maxcount+offset)>=len(self.writtenBytes) and self.NUM_COUNT_ITEMS != None and self.fragmentation == False:
 						if self.debug:
-							print ">> finish read"
+							print(">> finish read")
 						self.readCounter += 1
 						if self.readCounter>=15:
 							self.writtenBytes = ""
@@ -3326,49 +3326,49 @@ class amun_smb_prot:
 						self.smbReadAndX(data)
 					else:
 						if self.debug:
-							print ">> continue read"
+							print(">> continue read")
 						dataToRead = self.writtenBytes[self.readAndXOffset:self.readAndXOffset+maxcount]
 						self.readAndXOffset += maxcount
 						self.ReadAndX(data, maxcount, dataToRead)
 				return "".join(self.reply), None
 			elif commandByte == '\x2b':
 				if self.showRequests:
-					print ">> received smb echo request", len(data)
+					print(">> received smb echo request", len(data))
 				self.smbEcho(data)
 				return "".join(self.reply), None
 			elif commandByte == '\x71':
 				if self.showRequests:
-					print ">> received tree disconnect connection request", len(data)
+					print(">> received tree disconnect connection request", len(data))
 				self.TreeDisconnect(data)
 				return "".join(self.reply), 'quit'
 			elif commandByte == '\x04':
 				if self.showRequests:
-					print ">> received smb close request", len(data)
+					print(">> received smb close request", len(data))
 				self.SMBClose(data)
 				return "".join(self.reply), None
 			elif commandByte == '\x74':
 				if self.showRequests:
-					print ">> received logoff andx request", len(data)
+					print(">> received logoff andx request", len(data))
 				self.LogOffAndX(data)
 				return "".join(self.reply), None
 			elif commandByte == '\xa0':
 				if self.showRequests:
-					print ">> received nt trans request", len(data)
+					print(">> received nt trans request", len(data))
 				self.NTTransResponse(data)
 				return "".join(self.reply), None
 			elif commandByte == '\x33':
 				self.trans2counter = 1
 				if self.showRequests:
-					print ">> received trans2 secondary request", len(data)
+					print(">> received trans2 secondary request", len(data))
 				totalDataCount = struct.unpack('H', data[39:41])[0]
 				if self.debug:
-					print ">> Trans2 Data Count: %s" % totalDataCount
-					print ">> Trans2 Counter: %s" % self.trans2counter
+					print(">> Trans2 Data Count: %s" % totalDataCount)
+					print(">> Trans2 Counter: %s" % self.trans2counter)
 				self.vulnName = 'MS17010 (EternalBlue)'
 				self.NTTrans2Response(data)
 				return "".join(self.reply), 'shellcode'
 			else:
-				print ">> Unknown SMB Request: %s (%s)" % ([commandByte], len(data))
+				print(">> Unknown SMB Request: %s (%s)" % ([commandByte], len(data)))
 				return None, None
 		else:
 			if self.vulnName == "MS04007 (ASN1)":
@@ -3381,7 +3381,7 @@ class amun_smb_prot:
 					return "".join(self.reply), 'shellcode'
 			if self.fragmentation:
 				if self.debug:
-					print ">> still in fragmentation mode"
+					print(">> still in fragmentation mode")
 				#print [data]
 				self.fragments.append(data)
 				dataBlock = "".join(self.fragments)
@@ -3406,10 +3406,10 @@ class amun_smb_prot:
 						return self.checkOperationNumber(opnumber, dataBlock)
 				return None, 'noreply'
 			if self.debug:
-				print ">> no answer"
-				print self.trans2counter
+				print(">> no answer")
+				print(self.trans2counter)
 			#	print [data[:10]]
-				print self.vulnName
+				print(self.vulnName)
 			#if self.showRequests:
 			#	print [data]
 			self.shellcode.append(data)

@@ -76,7 +76,7 @@ class FeedUnpack(object):
         self.buf = bytearray()
     def __iter__(self):
         return self
-    def next(self):
+    def __next__(self):
         return self.unpack()
     def feed(self, data):
         self.buf.extend(data)
@@ -175,7 +175,7 @@ class hpclient(object):
     def publish(self, channel, **kwargs):
         try:
             self.send(msgpublish(self.ident, channel, json.dumps(kwargs).encode('latin1')))
-        except Exception, e:
+        except Exception as e:
             self.log_obj.log("log-hpfeeds connection to hpfriends lost: {0}".format(e), 12, "crit", Log=True, display=True)
             self.log_obj.log("log-hpfeeds connecting", 12, "crit", Log=True, display=True)
             self.connect()

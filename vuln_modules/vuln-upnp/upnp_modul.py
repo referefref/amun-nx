@@ -10,10 +10,10 @@ You should have received a copy of the GNU General Public License along with thi
 """
 
 try:
-	import psyco ; psyco.full()
-	from psyco.classes import *
+        import psyco ; psyco.full()
+        from psyco.classes import *
 except ImportError:
-	pass
+        pass
 
 import struct
 import random
@@ -21,38 +21,38 @@ import upnp_shellcodes
 
 class vuln:
 
-	def __init__(self):
-		try:
-			self.vuln_name = "UPNP Vulnerability"
-			self.stage = "SHELLCODE"
-			self.welcome_message = ""
-			self.shellcode = []
-		except KeyboardInterrupt:
-			raise
+        def __init__(self):
+                try:
+                        self.vuln_name = "UPNP Vulnerability"
+                        self.stage = "SHELLCODE"
+                        self.welcome_message = ""
+                        self.shellcode = []
+                except KeyboardInterrupt:
+                        raise
 
-	def print_message(self, data):
-		print "\n"
-		counter = 1
-		for byte in data:
-			if counter==16:
-				ausg = hex(struct.unpack('B',byte)[0])
-				if len(ausg) == 3:
-					list = str(ausg).split('x')
-					ausg = "%sx0%s" % (list[0],list[1])
-					print ausg
-				else:
-					print ausg
-				counter = 0
-			else:
-				ausg = hex(struct.unpack('B',byte)[0])
-				if len(ausg) == 3:
-					list = str(ausg).split('x')
-					ausg = "%sx0%s" % (list[0],list[1])
-					print ausg,
-				else:
-					print ausg,
-			counter += 1
-		print "\n>> Incoming Codesize: %s\n\n" % (len(data))
+        def print_message(self, data):
+                print("\n")
+                counter = 1
+                for byte in data:
+                        if counter==16:
+                                ausg = hex(struct.unpack('B',byte)[0])
+                                if len(ausg) == 3:
+                                        list = str(ausg).split('x')
+                                        ausg = "%sx0%s" % (list[0],list[1])
+                                        print(ausg)
+                                else:
+                                        print(ausg)
+                                counter = 0
+                        else:
+                                ausg = hex(struct.unpack('B',byte)[0])
+                                if len(ausg) == 3:
+                                        list = str(ausg).split('x')
+                                        ausg = "%sx0%s" % (list[0],list[1])
+                                        print(ausg, end=' ')
+                                else:
+                                        print(ausg, end=' ')
+                        counter += 1
+                print("\n>> Incoming Codesize: %s\n\n" % (len(data)))
 
         def getVulnName(self):
                 return self.vuln_name
@@ -60,63 +60,63 @@ class vuln:
         def getCurrentStage(self):
                 return self.stage
 
-	def getWelcomeMessage(self):
+        def getWelcomeMessage(self):
                 return self.welcome_message
 
-	def incoming(self, message, bytes, ip, vuLogger, random_reply, ownIP):
-		try:
-			self.reply = []
-			for i in range(0,510):
-				try:
-					self.reply.append("\x00")
-				except KeyboardInterrupt:
-					raise
-			resultSet = {}
-			resultSet['vulnname'] = self.vuln_name
-			resultSet['result'] = False
-			resultSet['accept'] = False
-			resultSet['shutdown'] = False
-			resultSet['reply'] = "None"
-			resultSet['stage'] = self.stage
-			resultSet['shellcode'] = "None"
-			resultSet["isFile"] = False
+        def incoming(self, message, bytes, ip, vuLogger, random_reply, ownIP):
+                try:
+                        self.reply = []
+                        for i in range(0,510):
+                                try:
+                                        self.reply.append("\x00")
+                                except KeyboardInterrupt:
+                                        raise
+                        resultSet = {}
+                        resultSet['vulnname'] = self.vuln_name
+                        resultSet['result'] = False
+                        resultSet['accept'] = False
+                        resultSet['shutdown'] = False
+                        resultSet['reply'] = "None"
+                        resultSet['stage'] = self.stage
+                        resultSet['shellcode'] = "None"
+                        resultSet["isFile"] = False
 
-			if self.stage=="SHELLCODE":
-				if bytes>0:
-					#print ".::[Amun - UPNP] collecting shellcode: %s ::." % (bytes)
-					resultSet['result'] = True
-					resultSet['accept'] = True
-					resultSet['reply'] = "".join(self.reply)
-					self.shellcode.append(message)
-					self.stage = "SHELLCODE"
-					#resultSet['shellcode'] = "".join(self.shellcode)
-					return resultSet
-				else:
-					#print ".::[Amun - UPNP] finish collecting shellcode (bytes %s) ::." % (bytes)
-					self.shellcode.append(message)
-					found_shellcode = "".join(self.shellcode)
-					if len(found_shellcode)>173:
-						#print ".::[Amun - UPNP] sending to shellcodemanager (bytes %s) ::." % (len(found_shellcode))
-						resultSet['result'] = False
-						resultSet['accept'] = True
-						resultSet['reply'] = "None"
-						resultSet['shellcode'] = found_shellcode
-						return resultSet
-					else:
-						#print ".::[Amun - UPNP] dropping (bytes %s) ::." % (len(found_shellcode))
-						resultSet['result'] = False
-						resultSet['accept'] = False
-						resultSet['reply'] = "None"
-						resultSet['shellcode'] = "None"
-						return resultSet
-			else:
-				resultSet['result'] = False
-				resultSet['accept'] = False
-				resultSet['reply'] = "None"
-				return resultSet
-			return resultSet
-		except KeyboardInterrupt:
-			raise
-		except StandardError, e:
-			print e
-			return resultSet
+                        if self.stage=="SHELLCODE":
+                                if bytes>0:
+                                        #print ".::[Amun - UPNP] collecting shellcode: %s ::." % (bytes)
+                                        resultSet['result'] = True
+                                        resultSet['accept'] = True
+                                        resultSet['reply'] = "".join(self.reply)
+                                        self.shellcode.append(message)
+                                        self.stage = "SHELLCODE"
+                                        #resultSet['shellcode'] = "".join(self.shellcode)
+                                        return resultSet
+                                else:
+                                        #print ".::[Amun - UPNP] finish collecting shellcode (bytes %s) ::." % (bytes)
+                                        self.shellcode.append(message)
+                                        found_shellcode = "".join(self.shellcode)
+                                        if len(found_shellcode)>173:
+                                                #print ".::[Amun - UPNP] sending to shellcodemanager (bytes %s) ::." % (len(found_shellcode))
+                                                resultSet['result'] = False
+                                                resultSet['accept'] = True
+                                                resultSet['reply'] = "None"
+                                                resultSet['shellcode'] = found_shellcode
+                                                return resultSet
+                                        else:
+                                                #print ".::[Amun - UPNP] dropping (bytes %s) ::." % (len(found_shellcode))
+                                                resultSet['result'] = False
+                                                resultSet['accept'] = False
+                                                resultSet['reply'] = "None"
+                                                resultSet['shellcode'] = "None"
+                                                return resultSet
+                        else:
+                                resultSet['result'] = False
+                                resultSet['accept'] = False
+                                resultSet['reply'] = "None"
+                                return resultSet
+                        return resultSet
+                except KeyboardInterrupt:
+                        raise
+                except Exception as e:
+                        print(e)
+                        return resultSet

@@ -300,7 +300,7 @@ class constructFile:
 							fp.write('\t\t\t\t\tself.reply[%s:%i] = "%s"\n' % (start_pos, stop_pos, list_of_stages[i]['reply']))
 							fp.write('\t\t\t\t\tresultSet["reply"] = "".join(self.reply)\n')
 						except:
-							print "no position"
+							print("no position")
 							fp.write('\t\t\t\t\tself.reply = "%s"\n' % (list_of_stages[i]['reply']))
 							fp.write('\t\t\t\t\tresultSet["reply"] = self.reply\n')
 							#sys.exit(1)
@@ -325,7 +325,7 @@ class constructFile:
 							fp.write('\t\t\t\tself.reply[%s:%i] = "%s"\n' % (start_pos, stop_pos, list_of_stages[i]['reply']))
 							fp.write('\t\t\t\tresultSet["reply"] = "".join(self.reply)\n')
 						except:
-							print "no position"
+							print("no position")
 							fp.write('\t\t\t\t\tself.reply = "%s"\n' % (list_of_stages[i]['reply']))
 							fp.write('\t\t\t\t\tresultSet["reply"] = self.reply\n')
 							#sys.exit(1)
@@ -337,8 +337,8 @@ class constructFile:
 						wr_st = "%s_STAGE%i" % (self.v_name, i+1)
 					fp.write('\t\t\t\tself.stage = "%s"\n' % (wr_st))
 					fp.write('\t\t\t\treturn resultSet\n')
-			except KeyError, e:
-				print "default stage: %s" % (e)
+			except KeyError as e:
+				print("default stage: %s" % (e))
 				if i == 1:
 					fp.write('\t\t\tif self.stage == "%s_STAGE%i":\n' % (self.v_name, i))
 				else:
@@ -357,7 +357,7 @@ class constructFile:
 	def write_shellcode_stage(self):
 		fp = open(self.module_name, 'a+')
 		number_of_stages = int(self.vdict['num_stages'])
-		print "Number of stages %i" % (number_of_stages)
+		print("Number of stages %i" % (number_of_stages))
 		if number_of_stages<=0:
 			fp.write('\t\t\tif self.stage == "SHELLCODE":\n')
 		else:
@@ -420,4 +420,4 @@ if __name__ == '__main__':
 		file.close()
 		obj = constructFile(vuln_dict)
 	else:
-		print "no/wrong options read help (-h)"
+		print("no/wrong options read help (-h)")

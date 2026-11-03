@@ -17,7 +17,7 @@ except ImportError:
 
 import asyncore
 import asynchat
-import StringIO
+import io
 import sys
 import traceback
 import socket
@@ -56,7 +56,7 @@ class req_handler(asynchat.async_chat):
 				sendBytes = self.socket_object.send(self.shellInfo)
 				bytesTosend = bytesTosend - sendBytes
 				self.shellInfo = self.shellInfo[sendBytes:]
-		except socket.error, e:
+		except socket.error as e:
 			self.handle_close()
 			return
 		if sendBytes<=0:
@@ -71,7 +71,7 @@ class req_handler(asynchat.async_chat):
 	def handle_read(self):
 		try:
 			bytes = self.recv(1024)
-		except socket.error, e:
+		except socket.error as e:
 			self.log_obj.log("handler socket error: %s" % (e), 9, "crit", True, False)
 			bytes = ""
 		self.collect_incoming_data(bytes)
@@ -98,7 +98,7 @@ class req_handler(asynchat.async_chat):
 						sendBytes = self.socket_object.send(prompt)
 						bytesTosend = bytesTosend - sendBytes
 						prompt = prompt[sendBytes:]
-			except socket.error, e:
+			except socket.error as e:
 				self.handle_close()
 				return
 		elif data=='local quit':
@@ -124,7 +124,7 @@ class req_handler(asynchat.async_chat):
 			self.log_obj.log("closing bindport (%s:%s)" % (self.item['own_host'],self.item['port']), 12, "debug", True, False)
 			try:
 				self.shutdown(socket.SHUT_RDWR)
-			except socket.error, e:
+			except socket.error as e:
 				pass
 			self.remove_download_entry()
 			self.bindport_closed = True
@@ -140,7 +140,7 @@ class req_handler(asynchat.async_chat):
 				for result in shellCResult:
 					if result['result']:
 						dlidentifier = "%s%s%s" % (self.attIP, self.ownIP,result['path'])
-						if not self.event_dict['download'].has_key(dlidentifier):
+						if dlidentifier not in self.event_dict['download']:
 							self.event_dict['download'][dlidentifier] = result
 						if result['found'] == "ftp":
 							self.log_obj.log("FTP from %s:%s (User: %s Pass: %s) file(s) %s" % (result['host'],result['port'],result['username'],result['passwort'],result['path']), 12, "info", True, False)
@@ -161,9 +161,9 @@ class req_handler(asynchat.async_chat):
 
 	def remove_download_entry(self):
 		try:
-			if self.currentDownloads.has_key(self.item['dlident']):
+			if self.item['dlident'] in self.currentDownloads:
 				del self.currentDownloads[self.item['dlident']]
-			if self.bindports.has_key(self.item['dlident']):
+			if self.item['dlident'] in self.bindports:
 				del self.bindports[self.item['dlident']]
 		except KeyboardInterrupt:
 			raise
@@ -183,7 +183,7 @@ class req_handler(asynchat.async_chat):
 			return False
 
 	def handle_error(self):
-		f = StringIO.StringIO()
+		f = io.StringIO()
 		traceback.print_exc(file=f)
 		self.log_obj.log( f.getvalue(), 9, "crit", True, True)
 		self.close()
@@ -208,7 +208,7 @@ class bindPort(asyncore.dispatcher):
 		self.identifier = "%s%s" % (item['own_host'],item['port'])
 		try:
 			self.bind( (item['own_host'], int(item['port'])) )
-		except socket.error, e:
+		except socket.error as e:
 			self.log_obj.log("port already in use? (%s): %s" % (item['port'],e), 6, "crit", True, True)
 			self.remove_download_entry()
 			try:
@@ -217,17 +217,17 @@ class bindPort(asyncore.dispatcher):
 				pass
 			return
 		self.listen(1)
-		if not self.currentSockets.has_key(self.identifier):
+		if self.identifier not in self.currentSockets:
 			self.currentSockets[self.identifier] = (int(time.time()), self.socket)
 		bindports[item['dlident']] = "%s,%s,%s" % (item['own_host'],item['port'],int(time.time()))
 		self.log_obj.log("%s initialized on port %s" % (item['own_host'], item['port']), 6, "info", True, False)
 
 	def remove_download_entry(self):
-		if self.currentDownloads.has_key(self.item['dlident']):
+		if self.item['dlident'] in self.currentDownloads:
 			del self.currentDownloads[self.item['dlident']]
-		if self.bindports.has_key(self.item['dlident']):
+		if self.item['dlident'] in self.bindports:
 			del self.bindports[self.item['dlident']]
-		if self.currentSockets.has_key(self.identifier):
+		if self.identifier in self.currentSockets:
 			del self.currentSockets[self.identifier]
 
 	def handle_close(self):
@@ -245,7 +245,7 @@ class bindPort(asyncore.dispatcher):
 			(ownIP, ownPort) = conn.getsockname()
 			self.log_obj.log("incoming data connection: %s:%s to port: %s" % (attIP, attPort, ownPort), 9, "debug", True, False)
 			handler = req_handler(self.divLogger, self.config_dict, self.decodersDict).handle_incoming_connection(conn, addr, self.currentDownloads, self.item, self.event_dict, self.replace_locals, attIP, attPort, ownIP, ownPort, self.bindports)
-		except socket.error, e:
+		except socket.error as e:
 			self.log_obj.log("error: %s" % (e), 6, "crit", True, True)
 		except KeyboardInterrupt:
 			raise
@@ -259,7 +259,7 @@ class bindPort(asyncore.dispatcher):
 		pass
 
 	def handle_error(self):
-		f = StringIO.StringIO()
+		f = io.StringIO()
 		traceback.print_exc(file=f)
 		self.log_obj.log( f.getvalue(), 9, "crit", True, True)
 		self.close()

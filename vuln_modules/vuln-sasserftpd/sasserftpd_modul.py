@@ -30,7 +30,7 @@ class vuln:
 			raise
 
 	def print_message(self, data):
-		print "\n"
+		print("\n")
 		counter = 1
 		for byte in data:
 			if counter==16:
@@ -38,20 +38,20 @@ class vuln:
 				if len(ausg) == 3:
 					list = str(ausg).split('x')
 					ausg = "%sx0%s" % (list[0],list[1])
-					print ausg
+					print(ausg)
 				else:
-					print ausg
+					print(ausg)
 				counter = 0
 			else:
 				ausg = hex(struct.unpack('B',byte)[0])
 				if len(ausg) == 3:
 					list = str(ausg).split('x')
 					ausg = "%sx0%s" % (list[0],list[1])
-					print ausg,
+					print(ausg, end=' ')
 				else:
-					print ausg,
+					print(ausg, end=' ')
 			counter += 1
-		print "\n>> Incoming Codesize: %s\n\n" % (len(data))
+		print("\n>> Incoming Codesize: %s\n\n" % (len(data)))
 
 	def getVulnName(self):
 		return self.vuln_name
@@ -120,8 +120,8 @@ class vuln:
 			return resultSet
 		except KeyboardInterrupt:
 			raise
-		except StandardError, e:
-			print e
+		except Exception as e:
+			print(e)
 			return resultSet
 		except:
-			print "SASSERFTPD FATAL ERROR!"
+			print("SASSERFTPD FATAL ERROR!")

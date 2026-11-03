@@ -43,7 +43,7 @@ class submit(object):
 			self.db = MySQLdb.connect(self.myHost, self.myUser, self.myPass, self.myTable)
 			self.cursor = self.db.cursor()
 			return True
-		except MySQLdb.Error, e:
+		except MySQLdb.Error as e:
 			logger.log("log-mysql failed: %s" % (e), 12, "crit", Log=True, display=True)
 			raise
 		except KeyboardInterrupt:
@@ -54,7 +54,7 @@ class submit(object):
 			self.db.close()
 			self.cursor.close()
 			return True
-		except MySQLdb.Error, e:
+		except MySQLdb.Error as e:
 			logger.log("log-mysql failed: %s" % (e), 12, "crit", Log=True, display=True)
 			raise
 		except KeyboardInterrupt:
@@ -64,7 +64,7 @@ class submit(object):
 		try:
 			self.cursor.execute(query)
 			return self.cursor.fetchall()
-		except MySQLdb.Error, e:
+		except MySQLdb.Error as e:
 			self.log_obj.log("log-mysql failed: %s" % (e), 12, "crit", Log=True, display=True)
 		except KeyboardInterrupt:
 			raise

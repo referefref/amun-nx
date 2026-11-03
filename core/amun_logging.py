@@ -29,31 +29,31 @@ class amun_logging:
 			if not Log and not display:
 				return
 			empty = ""
-			for i in xrange(0, tabs):
+			for i in range(0, tabs):
 				empty += " "
 		
 			if display:
 				if type=="debug":
 					### blue
-					print "\033[0;34m%s.::[Amun - %s] %s ::.\033[0m" % (empty, self.classname, message)
+					print("\033[0;34m%s.::[Amun - %s] %s ::.\033[0m" % (empty, self.classname, message))
 				elif type=="warn":
 					### yellow
-					print "\033[0;33m%s.::[Amun - %s] %s ::.\033[0m" % (empty, self.classname, message)
+					print("\033[0;33m%s.::[Amun - %s] %s ::.\033[0m" % (empty, self.classname, message))
 				elif type=="info":
 					### green
-					print "\033[0;32m%s.::[Amun - %s] %s ::.\033[0m" % (empty, self.classname, message)
+					print("\033[0;32m%s.::[Amun - %s] %s ::.\033[0m" % (empty, self.classname, message))
 				elif type=="crit":
 					### red
-					print "\033[0;31m%s.::[Amun - %s] %s ::.\033[0m" % (empty, self.classname, message)
+					print("\033[0;31m%s.::[Amun - %s] %s ::.\033[0m" % (empty, self.classname, message))
 				elif type=="fade":
 					### almost white
-					print "\033[0;37m%s.::[Amun - %s] %s ::.\033[0m" % (empty, self.classname, message)
+					print("\033[0;37m%s.::[Amun - %s] %s ::.\033[0m" % (empty, self.classname, message))
 				elif type=="div":
 					### lighter blue
-					print "\033[0;36m%s.::[Amun - %s] %s ::.\033[0m" % (empty, self.classname, message)
+					print("\033[0;36m%s.::[Amun - %s] %s ::.\033[0m" % (empty, self.classname, message))
 				else:
 					### black
-					print "\033[0m%s.::[Amun - %s] %s ::.\033[0m" % (empty, self.classname, message)
+					print("\033[0m%s.::[Amun - %s] %s ::.\033[0m" % (empty, self.classname, message))
 
 			if Log and self.Logger!=None:
 				logline = "[%s] %s" % (self.classname, message)
@@ -64,7 +64,7 @@ class amun_logging:
 					fp = open(self.logfile, 'a+')
 					fp.write(logline)
 					fp.close()
-				except IOError, e:
-					print "\033[0;31m%s.::[Amun - %s] %s ::.\033[0m"  % (empty, self.classname, message)
+				except IOError as e:
+					print("\033[0;31m%s.::[Amun - %s] %s ::.\033[0m"  % (empty, self.classname, message))
 		except KeyboardInterrupt:
 			raise

@@ -80,7 +80,7 @@ class log:
 			except:
 				attackerID = None
 		### the attackID in the socket list
-		if initialConnectionsDict.has_key(identifier) and attackerID!=None:
+		if identifier in initialConnectionsDict and attackerID!=None:
 			initialConnectionsDict[identifier][4] = attackerID
 
 	def incoming(self, attackerIP, attackerPort, victimIP, victimPort, vulnName, timestamp, downloadMethod, loLogger, attackerID, shellcodeName):

@@ -57,27 +57,27 @@ def start(content):
 	checksplain['linux shell (sh)'] =     re.compile('\\x68\\x73\\x2f\\x2f', re.S|re.I)
 	checksplain['linux shell (bin)'] =    re.compile('\\x6e\\x69\\x62\\x2f', re.S|re.I)
 
-	print
-	print "\033[0;32m>> checking binary for known windows API calls\033[0m"
-	print
+	print()
+	print("\033[0;32m>> checking binary for known windows API calls\033[0m")
+	print()
 
 	### plaintext commands
-	print "\033[0;32m >> checking for plaintext commands or calls\033[0m"
-	keys = checksplain.keys()
+	print("\033[0;32m >> checking for plaintext commands or calls\033[0m")
+	keys = list(checksplain.keys())
 	for key in keys:
 		match = checksplain[key].search(content)
 		if match:
-			print "\033[0;33m\t>> found plaintext: %s\033[0m" % (key)
+			print("\033[0;33m\t>> found plaintext: %s\033[0m" % (key))
 
-	print
+	print()
 	### api calls / commands
-	print "\033[0;32m >> checking for windows api calls\033[0m"
-	keys = checksbin.keys()
+	print("\033[0;32m >> checking for windows api calls\033[0m")
+	keys = list(checksbin.keys())
 	for key in keys:
 		match = checksbin[key].search(content)
 		if match:
-			print "\033[0;31m\t>> found API: %s\033[0m" % (key)
-	print
+			print("\033[0;31m\t>> found API: %s\033[0m" % (key))
+	print()
 
 if __name__ == '__main__':
 	filename = sys.argv[1]
@@ -87,6 +87,6 @@ if __name__ == '__main__':
 		fp.close()
 		start(content)
 	else:
-		print "\033[0;31m >> no such file\033[0m"
-	print "\033[0;32m>> done\033[0m"
-	print
+		print("\033[0;31m >> no such file\033[0m")
+	print("\033[0;32m>> done\033[0m")
+	print()

@@ -31,7 +31,7 @@ class vuln:
 			raise
 
 	def print_message(self, data):
-		print "\n"
+		print("\n")
 		counter = 1
 		for byte in data:
 			if counter==16:
@@ -39,20 +39,20 @@ class vuln:
 				if len(ausg) == 3:
 					list = str(ausg).split('x')
 					ausg = "%sx0%s" % (list[0],list[1])
-					print ausg
+					print(ausg)
 				else:
-					print ausg
+					print(ausg)
 				counter = 0
 			else:
 				ausg = hex(struct.unpack('B',byte)[0])
 				if len(ausg) == 3:
 					list = str(ausg).split('x')
 					ausg = "%sx0%s" % (list[0],list[1])
-					print ausg,
+					print(ausg, end=' ')
 				else:
-					print ausg,
+					print(ausg, end=' ')
 			counter += 1
-		print "\n>> %s: Incoming Codesize: %s\n\n" % (self.vuln_name, len(data))
+		print("\n>> %s: Incoming Codesize: %s\n\n" % (self.vuln_name, len(data)))
 
 	def getVulnName(self):
 		return self.vuln_name
@@ -94,7 +94,7 @@ class vuln:
 				#resultSet['reply'] = "".join(self.reply)
 				#self.stage = "MSSQL_STAGE3"
 				self.print_message( message )
-				print "%s - %s" % (self.stage,ip)
+				print("%s - %s" % (self.stage,ip))
 				return resultSet
 			elif self.stage=="MSSQL_STAGE3" and bytes==104:
 				if mssql_shellcodes.mssql_request_stage3==message:
@@ -112,7 +112,7 @@ class vuln:
 					return resultSet
 			elif self.stage=="SHELLCODE":
 				if bytes>0:
-					print ".::[Amun - MSSQL] collecting shellcode: %s (%s)::." % (bytes, ip)
+					print(".::[Amun - MSSQL] collecting shellcode: %s (%s)::." % (bytes, ip))
 					resultSet['result'] = True
 					resultSet['accept'] = True
 					#resultSet['reply'] = "".join(self.reply)
@@ -122,7 +122,7 @@ class vuln:
 					#resultSet['shellcode'] = "".join(self.shellcode)
 					return resultSet
 				else:
-					print ".::[Amun - MSSQL] finish collecting shellcode (bytes %s) ::." % (bytes)
+					print(".::[Amun - MSSQL] finish collecting shellcode (bytes %s) ::." % (bytes))
 					resultSet['result'] = False
 					resultSet['accept'] = True
 					#resultSet['reply'] = "None"
@@ -137,5 +137,5 @@ class vuln:
 			return resultSet
 		except KeyboardInterrupt:
 			raise
-		except StandardError, e:
-			print e
+		except Exception as e:
+			print(e)

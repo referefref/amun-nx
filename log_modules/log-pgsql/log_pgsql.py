@@ -41,7 +41,7 @@ class log:
 			self.db = psycopg2.connect("host='%s' dbname='%s' user='%s' password='%s'" % (self.pgHost, self.pgDB, self.pgUser, self.pgPass))
 			self.cursor = self.db.cursor()
 			return True
-		except psycopg2.Error, e:
+		except psycopg2.Error as e:
 			logger.log("log-pgsql failed: %s" % (e), 12, "crit", Log=True, display=True)
 			raise
 		except KeyboardInterrupt:
@@ -55,7 +55,7 @@ class log:
 			except:
 				pass
 			return True
-		except psycopg2.Error, e:
+		except psycopg2.Error as e:
 			logger.log("log-pgsql failed: %s" % (e), 12, "crit", Log=True, display=True)
 			raise
 		except KeyboardInterrupt:
@@ -67,7 +67,7 @@ class log:
 			result = self.cursor.fetchall()
 			self.db.commit()
 			return result
-		except psycopg2.Error, e:
+		except psycopg2.Error as e:
 			self.log_obj.log("log-pgsql failed: %s" % (e), 12, "crit", Log=True, display=True)
 		except KeyboardInterrupt:
 			raise

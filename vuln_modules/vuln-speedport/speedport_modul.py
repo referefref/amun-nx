@@ -34,7 +34,7 @@ class vuln:
 			raise
 
 	def print_message(self, data):
-		print "\n"
+		print("\n")
 		counter = 1
 		for byte in data:
 			if counter==16:
@@ -42,20 +42,20 @@ class vuln:
 				if len(ausg) == 3:
 					list = str(ausg).split("x")
 					ausg = "%sx0%s" % (list[0],list[1])
-					print ausg
+					print(ausg)
 				else:
-					print ausg
+					print(ausg)
 				counter = 0
 			else:
 				ausg = hex(struct.unpack("B",byte)[0])
 				if len(ausg) == 3:
 					list = str(ausg).split("x")
 					ausg = "%sx0%s" % (list[0],list[1])
-					print ausg,
+					print(ausg, end=' ')
 				else:
-					print ausg,
+					print(ausg, end=' ')
 			counter += 1
-		print "\n>> Incoming Codesize: %s\n\n" % (len(data))
+		print("\n>> Incoming Codesize: %s\n\n" % (len(data)))
 
 	def getVulnName(self):
 		return self.vuln_name
@@ -85,7 +85,7 @@ class vuln:
 			resultSet["isFile"] = False
 
 			if self.stage == "STAGE1" and bytes>0:
-				print ".::[Amun - Speedport] collecting stage1 (bytes %s ip %s) ::." % (bytes,ip)
+				print(".::[Amun - Speedport] collecting stage1 (bytes %s ip %s) ::." % (bytes,ip))
 				self.print_message(message)
 				resultSet['result'] = True
 				resultSet['accept'] = True
@@ -95,7 +95,7 @@ class vuln:
 				return resultSet
 			elif self.stage == "SHELLCODE":
 				if bytes>0:
-					print ".::[Amun - Speedport] collecting shellcode (bytes %s ip %s) ::." % (bytes,ip)
+					print(".::[Amun - Speedport] collecting shellcode (bytes %s ip %s) ::." % (bytes,ip))
 					resultSet["result"] = True
 					resultSet["accept"] = True
 					resultSet['reply'] = "".join(self.reply)
@@ -103,7 +103,7 @@ class vuln:
 					self.stage = "SHELLCODE"
 					return resultSet
 				else:
-					print ".::[Amun - Speedport] finish collecting shellcode (bytes %s ip %s) ::." % (bytes,ip)
+					print(".::[Amun - Speedport] finish collecting shellcode (bytes %s ip %s) ::." % (bytes,ip))
 					resultSet["result"] = False
 					resultSet["accept"] = True
 					resultSet["reply"] = "None"
@@ -118,7 +118,7 @@ class vuln:
 			return resultSet
 		except KeyboardInterrupt:
 			raise
-		except StandardError, e:
-			print e
+		except Exception as e:
+			print(e)
 		except:
-			print "Speedport fatal error"
+			print("Speedport fatal error")

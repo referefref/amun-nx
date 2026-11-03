@@ -74,7 +74,7 @@ class log:
 						self.cursor.execute("UPDATE public.amun_initial_connection SET count=count+1, last_seen=%s WHERE id=%s", (datetime.utcnow(), update_id))
 						self.db.commit()
 						""" store attacker identifier with socket dictionary """
-						if initialConnectionsDict.has_key(identifier) and update_id!=None:
+						if identifier in initialConnectionsDict and update_id!=None:
 							initialConnectionsDict[identifier][4] = update_id
 						return True
 					except psycopg2.Error as e:
@@ -88,7 +88,7 @@ class log:
 						connection_id = self.cursor.fetchone()[0]
 						self.db.commit()
 						""" store attacker identifier with socket dictionary """
-						if initialConnectionsDict.has_key(identifier) and connection_id!=None:
+						if identifier in initialConnectionsDict and connection_id!=None:
 							initialConnectionsDict[identifier][4] = connection_id
 						return True
 					except psycopg2.Error as e:

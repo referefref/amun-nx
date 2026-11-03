@@ -43,7 +43,7 @@ class amun_rdp_prot:
 		return self.vulnName
 
 	def print_message(self, data):
-		print "\n"
+		print("\n")
 		counter = 1
 		for byte in data:
 			if counter==16:
@@ -51,20 +51,20 @@ class amun_rdp_prot:
 				if len(ausg) == 3:
 					list = str(ausg).split('x')
 					ausg = "%sx0%s" % (list[0],list[1])
-					print ausg
+					print(ausg)
 				else:
-					print ausg
+					print(ausg)
 				counter = 0
 			else:
 				ausg = hex(struct.unpack('B',byte)[0])
 				if len(ausg) == 3:
 					list = str(ausg).split('x')
 					ausg = "%sx0%s" % (list[0],list[1])
-					print ausg,
+					print(ausg, end=' ')
 				else:
-					print ausg,
+					print(ausg, end=' ')
 			counter += 1
-		print "\n>> Incoming Codesize: %s\n\n" % (len(data))
+		print("\n>> Incoming Codesize: %s\n\n" % (len(data)))
 		return
 
 	def checkConnectionRequest(self, data):
@@ -83,16 +83,16 @@ class amun_rdp_prot:
 		x224class = struct.unpack('B', data[10])[0]
 		
 		if self.debug:
-			print "TPKT Header: version = %s" % (tpktVersion)
-			print "TPKT Header: Reserved = %s" % (tpktReserved)
-			print "TPKT Header: Packet length - high part = %s" % (tpktPLengthHigh)
-			print "TPKT Header: Packet length - low part = %s" % (tpktPLengthLow)
-			print "Packet Length: %s (%s)" % (pktLength, len(data))
-			print "X.224: Length indicator = %s" % (x224length)
-			print "X.224: Type = %s" % (x224type)
-			print "X.224: Destination reference = %s" % (x224destref)
-			print "X.224: Source reference = %s" % (x224sourceref)
-			print "X.224: Class and options = %s" % (x224class)
+			print("TPKT Header: version = %s" % (tpktVersion))
+			print("TPKT Header: Reserved = %s" % (tpktReserved))
+			print("TPKT Header: Packet length - high part = %s" % (tpktPLengthHigh))
+			print("TPKT Header: Packet length - low part = %s" % (tpktPLengthLow))
+			print("Packet Length: %s (%s)" % (pktLength, len(data)))
+			print("X.224: Length indicator = %s" % (x224length))
+			print("X.224: Type = %s" % (x224type))
+			print("X.224: Destination reference = %s" % (x224destref))
+			print("X.224: Source reference = %s" % (x224sourceref))
+			print("X.224: Class and options = %s" % (x224class))
 
 		cookie = []
 		pos = False
@@ -105,9 +105,9 @@ class amun_rdp_prot:
 				break
 			cookie.append(byte)
 		if self.debug:
-			print "%s" % (["".join(cookie)])
+			print("%s" % (["".join(cookie)]))
 			if pos:
-				print "%s" % ([data[pos:]])
+				print("%s" % ([data[pos:]]))
 
 		if tpktVersion == 3 and tpktPLengthLow == len(data) and x224class == 0:
 			return True
@@ -249,32 +249,32 @@ class amun_rdp_prot:
 			posi = posi + 4
 
 		if self.debug:
-			print "TPKT Header: version = %s" % (tpktVersion)
-			print "TPKT Header: Reserved = %s" % (tpktReserved)
-			print "TPKT Header: Packet length - high part = %s" % (tpktPLengthHigh)
-			print "TPKT Header: Packet length - low part = %s" % (tpktPLengthLow)
-			print "Packet Length: %s (%s)" % (pktLength, len(data))
-			print "X.224: Length indicator = %s" % (x224length)
-			print "X.224: Type = %s (%s)" % (x224type, hex(x224type))
+			print("TPKT Header: version = %s" % (tpktVersion))
+			print("TPKT Header: Reserved = %s" % (tpktReserved))
+			print("TPKT Header: Packet length - high part = %s" % (tpktPLengthHigh))
+			print("TPKT Header: Packet length - low part = %s" % (tpktPLengthLow))
+			print("Packet Length: %s (%s)" % (pktLength, len(data)))
+			print("X.224: Length indicator = %s" % (x224length))
+			print("X.224: Type = %s (%s)" % (x224type, hex(x224type)))
 			if hex(x224type)=='0xf0':
-				print "\t Data TPDU"
-			print "X.224: EOT = %s (%s)" % (x224eot, hex(x224eot))
+				print("\t Data TPDU")
+			print("X.224: EOT = %s (%s)" % (x224eot, hex(x224eot)))
 			if data[8]=='\x65':
-				print "MCS_TYPE_CONNECTINITIAL"
-			print "BER: Type Length:", [bertypeLength]
-			print "Connect-Initial::callingDomainSelector", [callingDomainSelector]
-			print "Connect-Initial::calledDomainSelector", [calledDomainSelector]
-			print "Connect-Initial::upwardFlag", [upwardFlag]
-			print "Connect-Initial::targetParameters", [targetParameters]
-			print "DomainParameters::maxChannelIds", [maxChannelIds]
-			print "DomainParameters::maxUserIds", [maxUserIds]
-			print "DomainParameters::maxTokenIds", [maxTokenIds]
-			print "DomainParameters::numPriorities", [numPriorities]
-			print "DomainParameters::minThroughput", [minThroughput]
-			print "DomainParameters::maxHeight", [maxHeight]
-			print "DomainParameters::maxMCSPDUsize", [maxMCSPDUsize]
-			print "DomainParameters::protocolVersion", [protocolVersion]
-			print [data[posi:]]
+				print("MCS_TYPE_CONNECTINITIAL")
+			print("BER: Type Length:", [bertypeLength])
+			print("Connect-Initial::callingDomainSelector", [callingDomainSelector])
+			print("Connect-Initial::calledDomainSelector", [calledDomainSelector])
+			print("Connect-Initial::upwardFlag", [upwardFlag])
+			print("Connect-Initial::targetParameters", [targetParameters])
+			print("DomainParameters::maxChannelIds", [maxChannelIds])
+			print("DomainParameters::maxUserIds", [maxUserIds])
+			print("DomainParameters::maxTokenIds", [maxTokenIds])
+			print("DomainParameters::numPriorities", [numPriorities])
+			print("DomainParameters::minThroughput", [minThroughput])
+			print("DomainParameters::maxHeight", [maxHeight])
+			print("DomainParameters::maxMCSPDUsize", [maxMCSPDUsize])
+			print("DomainParameters::protocolVersion", [protocolVersion])
+			print([data[posi:]])
 
 		if x224length == 2 and data[7]=='\x7f' and data[8]=='\x65':
 			return True
@@ -329,22 +329,22 @@ class amun_rdp_prot:
 			return None, None
 		elif len(data)<10:
 			if self.showRequests:
-				print ">> received too short data (<10)"
-				print [data]
-				print
+				print(">> received too short data (<10)")
+				print([data])
+				print()
 			return None, None
 		### check for  x.224 connection request PDU
 		if self.checkConnectionRequest(data):
 			if self.debug:
-				print ">> valid connection request received"
-				print
+				print(">> valid connection request received")
+				print()
 			self.createConnectionResponse()
 			return "".join(self.reply), None
 		### check for conference request
 		elif self.checkForConferenceRequest(data):
 			if self.debug:
-				print ">> valid conference request received"
-				print
+				print(">> valid conference request received")
+				print()
 			self.createConferenceResponse()
 			return "".join(self.reply), None
 		else:

@@ -56,7 +56,7 @@ class tftp(asyncore.dispatcher):
 		try:
 			udp_port = random.randint(5062,62535)
 			self.bind( (item['own_host'], udp_port) )
-		except socket.error, e:
+		except socket.error as e:
 			self.log_obj.log("UDP Port busy: %i" % (udp_port), 6, "crit", True, True)
 			self.handle_close()
 			return
@@ -76,9 +76,9 @@ class tftp(asyncore.dispatcher):
 		self.log_obj.log("%s Sending TFTP Request Package (%s)" % (self.own_ip,[self.packet.strip()]), 6, "debug", True, False)
 
 	def remove_download_entry(self):
-		if self.currentDownloads.has_key(self.item['dlident']):
+		if self.item['dlident'] in self.currentDownloads:
 			del self.currentDownloads[self.item['dlident']]
-		if self.tftp_downloads.has_key(self.item['dlident']):
+		if self.item['dlident'] in self.tftp_downloads:
 			del self.tftp_downloads[self.item['dlident']]
 
 	def handle_connect(self):
@@ -113,7 +113,7 @@ class tftp(asyncore.dispatcher):
 			if self.active:
 				try:
 					(buffer, (raddress, rport)) = self.recvfrom(self.blk_size)
-				except socket.error, e:
+				except socket.error as e:
 					self.log_obj.log("udp socket error: %s" % (e), 6, "crit", True, False)
 					buffer = 'resend'
 					self.max_retries += 1

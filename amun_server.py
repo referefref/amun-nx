@@ -25,7 +25,7 @@ import asyncore
 import sys
 import socket
 import traceback
-import StringIO
+import io
 import time
 import select
 import logging
@@ -78,16 +78,16 @@ class amunServer(asynchat.async_chat):
         self.set_reuse_addr()
         try:
             self.bind(self.address)
-        except socket.error, e:
+        except socket.error as e:
             if int(e[0])==98:
                 self.log_obj.log("Port already in use: IP: %s Port: %s" % (self.address[0], self.address[1]), 0, "crit", True, True)
             else:
-                print "amun_server socket error:"
-                print e
+                print("amun_server socket error:")
+                print(e)
                 raise
         except:
-            print "amun_server bind error:"
-            print self.address
+            print("amun_server bind error:")
+            print(self.address)
             raise
         if type=="tcp":
             self.listen(1)
@@ -172,7 +172,7 @@ class amunServer(asynchat.async_chat):
                     self.log_obj.log("received unknown UDP request", 0, "debug", True, True)
             else:
                 self.log_obj.log("UDP size too small", 0, "debug", True, True)
-        except StandardError as e:
+        except Exception as e:
             self.log_obj.log("error in UDP handle_read: %s" % (e), 0, "crit", True, True)
 
     def writable(self):
@@ -183,7 +183,7 @@ class amunServer(asynchat.async_chat):
 
     def handle_error(self):
         self.log_obj.log("handle_error", 0, "crit", True, True)
-        f = StringIO.StringIO()
+        f = io.StringIO()
         traceback.print_exc(file=f)
         self.log_obj.log(f.getvalue(), 0, "crit", True, True)
         self.close()
@@ -192,24 +192,24 @@ class amunServer(asynchat.async_chat):
 def log(message, tabs=0, type="normal", Logger=None, display=True):
     try:
         empty = ""
-        for i in xrange(0, tabs):
+        for i in range(0, tabs):
             empty += " "
 
         if display:
             if type=="debug":
-                print "\033[0;34m%s.::[Amun - Main] %s ::.\033[0m" % (empty, message)
+                print("\033[0;34m%s.::[Amun - Main] %s ::.\033[0m" % (empty, message))
             elif type=="warn":
-                print "\033[0;33m%s.::[Amun - Main] %s ::.\033[0m" % (empty, message)
+                print("\033[0;33m%s.::[Amun - Main] %s ::.\033[0m" % (empty, message))
             elif type=="info":
-                print "\033[0;32m%s.::[Amun - Main] %s ::.\033[0m" % (empty, message)
+                print("\033[0;32m%s.::[Amun - Main] %s ::.\033[0m" % (empty, message))
             elif type=="crit":
-                print "\033[0;31m%s.::[Amun - Main] %s ::.\033[0m" % (empty, message)
+                print("\033[0;31m%s.::[Amun - Main] %s ::.\033[0m" % (empty, message))
             elif type=="fade":
-                print "\033[0;37m%s.::[Amun - Main] %s ::.\033[0m" % (empty, message)
+                print("\033[0;37m%s.::[Amun - Main] %s ::.\033[0m" % (empty, message))
             elif type=="div":
-                print "\033[0;36m%s.::[Amun - Main] %s ::.\033[0m" % (empty, message)
+                print("\033[0;36m%s.::[Amun - Main] %s ::.\033[0m" % (empty, message))
             else:
-                print "\033[0m%s.::[Amun - Main] %s ::.\033[0m" % (empty, message)
+                print("\033[0m%s.::[Amun - Main] %s ::.\033[0m" % (empty, message))
         if Logger:
             Logger.info(message)
     except KeyboardInterrupt:
@@ -218,7 +218,7 @@ def log(message, tabs=0, type="normal", Logger=None, display=True):
 def check_idle_connections(currentSockets, connection_timeout, event_dict, serverLogger, config_dict):
     ### check idle connections
     try:
-        conn_keys = currentSockets.keys()
+        conn_keys = list(currentSockets.keys())
         for key in conn_keys:
             current_time = int(time.time())
             conn_time = currentSockets[key][0]
@@ -234,7 +234,7 @@ def check_idle_connections(currentSockets, connection_timeout, event_dict, serve
                         log("sending shutdown to idle connection (idle: %s IP: %s)" % (difference, attIP), 9, "debug", serverLogger, True)
                     if key in event_dict['initial_connections']:
                         del event_dict['initial_connections'][key]
-                except socket.error, e:
+                except socket.error as e:
                     if e[0]==9:
                         log("shutdown non-existant socket", 9, "crit", None, False)
                     elif e[0]==107:
@@ -251,7 +251,7 @@ def check_idle_connections(currentSockets, connection_timeout, event_dict, serve
 def check_download_events(event_dict, config_dict, currentDownloads, bindports, tftp_downloads, divLogger, currentSockets, ftp_downloads, decodersDict):
     ### check for download events
     try:
-        downl_keys = event_dict['download'].keys()
+        downl_keys = list(event_dict['download'].keys())
         for key in downl_keys:
             ### get download item
             item = event_dict['download'][key]
@@ -316,7 +316,7 @@ def generic_check_unblock_ips(event_dict, event_key, block_time, logger, verbose
 
     """
     try:
-        allkeys = event_dict[event_key].keys()
+        allkeys = list(event_dict[event_key].keys())
         for key in allkeys:
             logged_time = event_dict[event_key][key]
             current_time = int(time.time())
@@ -331,7 +331,7 @@ def generic_check_unblock_ips(event_dict, event_key, block_time, logger, verbose
 def check_for_initial_connection_event(event_dict, exLogger, log_modules, loLogger, currentSockets, serverLogger, verbose_logging):
     ### check for initial connection events
     try:
-        init_keys = event_dict['initial_connections'].keys()
+        init_keys = list(event_dict['initial_connections'].keys())
         for key in init_keys:
             item = event_dict['initial_connections'][key]
             if item[5] == 1:
@@ -358,7 +358,7 @@ def check_for_initial_connection_event(event_dict, exLogger, log_modules, loLogg
 def check_for_exploit_event(event_dict, exLogger, log_modules, loLogger):
     ### check for exploit events
     try:
-        expl_keys = event_dict['exploit'].keys()
+        expl_keys = list(event_dict['exploit'].keys())
         for key in expl_keys:
             item = event_dict['exploit'][key]
             del event_dict['exploit'][key]
@@ -387,7 +387,7 @@ def check_for_exploit_event(event_dict, exLogger, log_modules, loLogger):
 def check_for_succ_download_event(event_dict, suLogger, submit_modules, smLogger, block_sucdown, lastBinaries, log_modules, loLogger):
     ### check for successfull download events
     try:
-        dwl_keys = event_dict['successfull_downloads'].keys()
+        dwl_keys = list(event_dict['successfull_downloads'].keys())
         for key in dwl_keys:
             item = event_dict['successfull_downloads'][key]
             ### item[0] => data length
@@ -522,7 +522,7 @@ def check_idle_bindports(bindports, bind_timeout):
 
     """
     try:
-        bindport_keys = bindports.keys()
+        bindport_keys = list(bindports.keys())
         for key in bindport_keys:
             (ip, port, start_time) = bindports[key].split(',')
             current_time = int(time.time())
@@ -536,7 +536,7 @@ def check_idle_bindports(bindports, bind_timeout):
                     oSocket.close()
                     if key in bindports:
                         del bindports[key]
-                except socket.error, e:
+                except socket.error as e:
                     if e[0]!=111:
                         log("bindport close failure: %s" % (e), 0, "crit", None, True)
                     else:
@@ -556,7 +556,7 @@ def check_idle_tftp_downloads(tftp_downloads, tftp_timeout):
 
     """
     try:
-        tftp_keys = tftp_downloads.keys()
+        tftp_keys = list(tftp_downloads.keys())
         for key in tftp_keys:
             (port, start_time, ip) = tftp_downloads[key].split(',')
             current_time = int(time.time())
@@ -566,7 +566,7 @@ def check_idle_tftp_downloads(tftp_downloads, tftp_timeout):
                     oSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                     oSocket.sendto('resend', (ip, int(port)))
                     oSocket.close()
-                except socket.error, e:
+                except socket.error as e:
                     log("tftp download close failure: %s" % (e), 0, "crit", None, True)
                     if key in tftp_downloads:
                         del tftp_downloads[key]
@@ -582,7 +582,7 @@ def check_idle_ftp_downloads(ftp_downloads, ftp_timeout):
 
     """
     try:
-        ftp_keys = ftp_downloads.keys()
+        ftp_keys = list(ftp_downloads.keys())
         for key in ftp_keys:
             (port, start_time, ip) = ftp_downloads[key].split(',')
             current_time = int(time.time())
@@ -595,7 +595,7 @@ def check_idle_ftp_downloads(ftp_downloads, ftp_timeout):
                     oSocket.close()
                     if key in ftp_downloads:
                         del ftp_downloads[key]
-                except socket.error, e:
+                except socket.error as e:
                     if e[0]!=111:
                         log("ftp download close failure: %s" % (e), 0, "crit", None, True)
                     else:
@@ -712,25 +712,25 @@ def checkServers(serverList, vuln_modules, divLogger, amunServerIPList, currentS
         output_curr_sockets = int(config.getSingleValue("output_curr_sockets"))
         if output_curr_sockets==1:
             fp = open("current_listed_sockets.txt", "w")
-            curr_keys = currentSockets.keys()
+            curr_keys = list(currentSockets.keys())
             for key in curr_keys:
                 try:
                     connectionTime = currentSockets[key][0]
                     (attIP, attPort) = currentSockets[key][1].getpeername()
                     line = "%s:%s - %s\n" % (attIP, attPort, time.ctime(int(connectionTime)))
                     fp.write(line)
-                except socket.error, e:
+                except socket.error as e:
                     pass
             fp.close()
 
         ### read current vulnerability configuration
         up_vuln_modules = readVulnModules(config, display=False)
-        up_portList = up_vuln_modules.keys()
+        up_portList = list(up_vuln_modules.keys())
 
         newServerList = {}
         curr_portList = []
         ### check if server needs to be removed
-        for server in serverList.values():
+        for server in list(serverList.values()):
             port = str(server.address[1]).strip()
             curr_portList.append(port)
             if not port in up_portList:
@@ -902,8 +902,8 @@ def runMain():
     decodersDict = regDecode.getDecoders()
     del regDecode
     portList = []
-    vuln_ports = vuln_modules.keys()
-    portList = map(int, vuln_ports)
+    vuln_ports = list(vuln_modules.keys())
+    portList = list(map(int, vuln_ports))
     running = True
     portList.sort()
     ### server liste
@@ -965,14 +965,14 @@ def runMain():
             (serverList, vuln_modules, connection_timeout) = checkServers(serverList, vuln_modules, divLogger, amunServerIPList, currentSockets, decodersDict, event_dict, config_dict, config, connection_timeout)
             ### release CPU for short time
             time.sleep(.0001)
-        except socket.error, e:
+        except socket.error as e:
             pass
-        except StandardError, e:
-            print "amun_server main loop standard error"
-            print "error: %s" % (e)
-            f = StringIO.StringIO()
+        except Exception as e:
+            print("amun_server main loop standard error")
+            print("error: %s" % (e))
+            f = io.StringIO()
             traceback.print_exc(file=f)
-            print f.getvalue()
+            print(f.getvalue())
             running = False
             break
         except KeyboardInterrupt:
@@ -980,7 +980,7 @@ def runMain():
             break
     log("close all servers", 0, "info", None, True)
     if len(serverList)>0:
-        server_keys = serverList.keys()
+        server_keys = list(serverList.keys())
         for key in server_keys:
             serverList[key].close()
     log("close remaining bindports", 0, "info", None, True)
@@ -988,11 +988,11 @@ def runMain():
         check_idle_bindports(bindports, 0)
     log("close remaining sockets", 0, "info", None, True)
     if len(currentSockets)>0:
-        conn_keys = currentSockets.keys()
+        conn_keys = list(currentSockets.keys())
         for key in conn_keys:
             try:
                 currentSockets[key][1].shutdown(socket.SHUT_RDWR)
-            except socket.error, e:
+            except socket.error as e:
                 if key in currentSockets:
                     del currentSockets[key]
     ### Empty IPTables Input Table
@@ -1017,7 +1017,7 @@ def lowerPrivileges(uidName="nobody", gidGroup="nogroup"):
         startUIDname = pwd.getpwuid(startUID)[0]
         startGIDname = grp.getgrgid(startGID)[0]
         log("started as %s/%s" % (startUIDname, startGIDname), 0, "info", None, True)
-    except KeyError, e:
+    except KeyError as e:
         log("no such user -> starting as root", 0, "crit", None, True)
         return
 
@@ -1029,21 +1029,21 @@ def lowerPrivileges(uidName="nobody", gidGroup="nogroup"):
     try:
         runAsUID = pwd.getpwnam(uidName)[2]
         runAsGID = grp.getgrnam(gidGroup)[2]
-    except KeyError, e:
+    except KeyError as e:
         log("no such user -> starting as root", 0, "crit", None, True)
         return
 
     try:
         os.setgid(runAsGID)
-    except OSError, e:
+    except OSError as e:
         log("could not set new group %s" % (e), 0, "info", None, True)
 
     try:
         os.setuid(runAsUID)
-    except OSError, e:
+    except OSError as e:
         log("could not set new user %s" % (e), 0, "info", None, True)
 
-    newUMask = 077
+    newUMask = 0o77
     oldUMask = os.umask(newUMask)
     log("changing umask from %s to %s" % (oct(oldUMask), oct(newUMask)), 0, "info", None, True)
 
@@ -1090,8 +1090,8 @@ def runAnalysis(filename, shellcmd):
             else:
                 result = shellcode_manager.start_matching(shellcodeSet, "127.0.0.1", "127.0.0.1", "0", 0, True)
             for res in result:
-                print res
-                print
+                print(res)
+                print()
         else:
             log("no such file %s" % (filename), 0, "crit", None, True)
     except KeyboardInterrupt:
@@ -1126,10 +1126,10 @@ if __name__ == '__main__':
          \/      \/           \/
 """
     mess = "starting Amun server..."
-    print "\n%s\n\t\t%s\n" % (art, mess)
+    print("\n%s\n\t\t%s\n" % (art, mess))
     if not opts.filename:
         runMain()
     elif opts.filename:
         runAnalysis(opts.filename, opts.shellcmd)
     else:
-        print "something is wrong"
+        print("something is wrong")

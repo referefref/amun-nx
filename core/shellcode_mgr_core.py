@@ -16,7 +16,7 @@ except ImportError:
 	pass
 
 from re import compile, S as reS
-from urlparse import urlsplit, urlunparse
+from urllib.parse import urlsplit, urlunparse
 from hashlib import md5
 from os import path as ospath
 from socket import inet_ntoa
@@ -24,7 +24,7 @@ from struct import pack, unpack
 from base64 import decodestring, b64encode
 
 from sys import exit, stdout
-from StringIO import StringIO
+from io import StringIO
 import traceback
 
 from iprange import IPRange
@@ -268,7 +268,7 @@ class shell_mgr:
 		try:
 			### Match Wuerzburg Shellcode
 			if self.displayShellCode:
-				print "starting Wuerzburg matching ..."
+				print("starting Wuerzburg matching ...")
 				stdout.flush()
 			match = self.decodersDict['wuerzburg'].search( self.shellcode )
 			if match:
@@ -297,7 +297,7 @@ class shell_mgr:
 				return True
 			### Match Leimbach shellcode
 			if self.displayShellCode:
-				print "starting Leimbach matching ..."
+				print("starting Leimbach matching ...")
 				stdout.flush()
 			match = self.decodersDict['leimbach'].search( self.shellcode )
 			if match:
@@ -309,7 +309,7 @@ class shell_mgr:
 					return True
 			### Match Conficker Shellcode
 			if self.displayShellCode:
-				print "starting Conficker matching ..."
+				print("starting Conficker matching ...")
 				stdout.flush()
 			match = self.decodersDict['conficker'].search( self.shellcode )
 			if match:
@@ -321,13 +321,13 @@ class shell_mgr:
 					return True
 			### Match Adenau Shellcode
 			if self.displayShellCode:
-				print "starting Adenau matching ..."
+				print("starting Adenau matching ...")
 				stdout.flush()
 			match = self.decodersDict['adenau'].search( self.shellcode )
 			if match:
 				#self.write_hexdump(self.shellcode, "adenau")
 				keys = {}
-				for i in xrange(0,4):
+				for i in range(0,4):
 					keys[i] =  unpack('B',match.groups()[i])[0]
 				self.resultSet['xorkey'] = keys
 				self.log_obj.log("found adenau xor decoder (keys: %s)" % (keys), 9, "info", False, True)
@@ -335,7 +335,7 @@ class shell_mgr:
 					return True
 			### Match Mannheim Shellcode1
 			if self.displayShellCode:
-				print "starting Mannheim matching ..."
+				print("starting Mannheim matching ...")
 				stdout.flush()
 			match = self.decodersDict['mannheim'].search( self.shellcode )
 			if match:
@@ -353,7 +353,7 @@ class shell_mgr:
 					return True
 			### Match Unnamed Shellcode2
 			if self.displayShellCode:
-				print "starting Unnamed Shellcode2 matching ..."
+				print("starting Unnamed Shellcode2 matching ...")
 				stdout.flush()
 			match = self.decodersDict['plain2'].search( self.shellcode )
 			if match:
@@ -371,7 +371,7 @@ class shell_mgr:
 				return True
 			### Match Aachen Shellcode (aka zuc_winshit)
 			if self.displayShellCode:
-				print "starting Aachen Shellcode matching ..."
+				print("starting Aachen Shellcode matching ...")
 				stdout.flush()
 			match = self.decodersDict['aachen'].search( self.shellcode )
 			if match:
@@ -383,7 +383,7 @@ class shell_mgr:
 					return True
 			### Match Mainz / Bielefeld Shellcode
 			if self.displayShellCode:
-				print "starting Mainz / Bielefeld matching ..."
+				print("starting Mainz / Bielefeld matching ...")
 				stdout.flush()
 			match = self.decodersDict['mainz'].search( self.shellcode )
 			if match:
@@ -398,7 +398,7 @@ class shell_mgr:
 					self.write_hexdump(dec_shellcode, "mainz-bielefeld", "decoded")
 			### Match Heidelberg Shellcode
 			if self.displayShellCode:
-				print "starting Heidelberg matching ..."
+				print("starting Heidelberg matching ...")
 				stdout.flush()
 			match = self.decodersDict['heidelberg'].search( self.shellcode )
 			if match:
@@ -413,13 +413,13 @@ class shell_mgr:
 					return True
 			### Match Rothenburg / Schoenborn Shellcode
 			if self.displayShellCode:
-				print "starting Rothenburg / Schoenborn matching ..."
+				print("starting Rothenburg / Schoenborn matching ...")
 				stdout.flush()
 			match = self.decodersDict['rothenburg'].search( self.shellcode )
 			if match:
 				#self.write_hexdump(self.shellcode, "rothenburg")
 				keys = {}
-				for i in xrange(0,4):
+				for i in range(0,4):
 					keys[i] = unpack('B',match.groups()[i])[0]
 				self.resultSet['xorkey'] = keys
 				self.log_obj.log("found rothenburg/schoenborn xor decoder (keys: %s)" % (keys), 9, "info", False, True)
@@ -427,12 +427,12 @@ class shell_mgr:
 					return True
 			### Match Koeln Shellcode
 			if self.displayShellCode:
-				print "starting Koeln matching ..."
+				print("starting Koeln matching ...")
 				stdout.flush()
 			match = self.decodersDict['koeln'].search( self.shellcode )
 			if match:
 				keys = {}
-				for i in xrange(0,4):
+				for i in range(0,4):
 					keys[i] = unpack('B',match.groups()[i])[0]
 				self.resultSet['xorkey'] = keys
 				self.log_obj.log("found koeln xor decoder (keys: %s)" % (keys), 9, "info", False, True)
@@ -440,7 +440,7 @@ class shell_mgr:
 					return True
 			### Match linkbot XOR shellcode (aka Lindau)
 			if self.displayShellCode:
-				print "starting Lindau matching ..."
+				print("starting Lindau matching ...")
 				stdout.flush()
 			match = self.decodersDict['linkbot'].search( self.shellcode )
 			if match:
@@ -453,7 +453,7 @@ class shell_mgr:
 					return True
 			### Match schauenburg XOR shellcode
 			if self.displayShellCode:
-				print "starting schauenburg matching ..."
+				print("starting schauenburg matching ...")
 				stdout.flush()
 			match = self.decodersDict['schauenburg'].search( self.shellcode )
 			if match:
@@ -465,7 +465,7 @@ class shell_mgr:
 					return True
 			### Match plain1 shellcode
 			if self.displayShellCode:
-				print "starting plain1 matching ..."
+				print("starting plain1 matching ...")
 				stdout.flush()
 			match = self.decodersDict['plain1'].search( self.shellcode )
 			if match:
@@ -483,7 +483,7 @@ class shell_mgr:
 				return True
 			### Match PexAlphaNumeric shellcode (mixedcase_w32sehgetpc)
 			if self.displayShellCode:
-				print "starting PexAlphaNumeric matching ..."
+				print("starting PexAlphaNumeric matching ...")
 				stdout.flush()
 			match = self.decodersDict['pexalphanum'].search( self.shellcode )
 			if match:
@@ -494,7 +494,7 @@ class shell_mgr:
 					return True
 			### Alpha Upper shellcode
 			if self.displayShellCode:
-				print "starting Alpha_Upper matching ..."
+				print("starting Alpha_Upper matching ...")
 				stdout.flush()
 			match = self.decodersDict['alphaupper'].search( self.shellcode )
 			if match:
@@ -519,7 +519,7 @@ class shell_mgr:
 					return True
 			### Match Lichtenfels shellcode
 			if self.displayShellCode:
-				print "starting Lichtenfels matching ..."
+				print("starting Lichtenfels matching ...")
 				stdout.flush()
 			match = self.decodersDict['lichtenfels'].search( self.shellcode )
 			if match:
@@ -532,7 +532,7 @@ class shell_mgr:
 					return True
 			### Match Berlin shellcode
 			if self.displayShellCode:
-				print "starting Berlin matching ..."
+				print("starting Berlin matching ...")
 				stdout.flush()
 			match = self.decodersDict['berlin'].search( self.shellcode )
 			if match:
@@ -544,7 +544,7 @@ class shell_mgr:
 					return True
 			### Match Furth shellcode
 			if self.displayShellCode:
-				print "starting Furth matching ..."
+				print("starting Furth matching ...")
 				stdout.flush()
 			match = self.decodersDict['furth'].search( self.shellcode )
 			if match:
@@ -558,7 +558,7 @@ class shell_mgr:
 					return True
 			### Match Duesseldorf shellcode
 			if self.displayShellCode:
-				print "starting Duesseldorf matching ..."
+				print("starting Duesseldorf matching ...")
 				stdout.flush()
 			match = self.decodersDict['duesseldorf'].search( self.shellcode )
 			if match:
@@ -573,7 +573,7 @@ class shell_mgr:
 				self.log_obj.log("xor keys differ, aborting for manual analysis", 9, "info", True, True)
 			### Match Siegburg shellcode
 			if self.displayShellCode:
-				print "starting Siegburg matching ..."
+				print("starting Siegburg matching ...")
 				stdout.flush()
 			match = self.decodersDict['siegburg'].search( self.shellcode )
 			if match:
@@ -585,12 +585,12 @@ class shell_mgr:
 					return True
 			### Match Ulm shellcode
 			if self.displayShellCode:
-				print "starting Ulm matching ..."
+				print("starting Ulm matching ...")
 				stdout.flush()
 			match = self.decodersDict['ulm'].search( self.shellcode )
 			if match:
 				keys = {}
-				for i in xrange(0,4):
+				for i in range(0,4):
 					keys[i] = unpack('B',match.groups()[i])[0]
 				self.resultSet['xorkey'] = keys
 				self.log_obj.log("found ulm xor decoder (keys: %s)" % (keys), 9, "info", False, True)
@@ -598,7 +598,7 @@ class shell_mgr:
 					return True
 			### Match Langenfeld shellcode
 			if self.displayShellCode:
-				print "starting Langenfeld matching ..."
+				print("starting Langenfeld matching ...")
 				stdout.flush()
 			match = self.decodersDict['langenfeld'].search( self.shellcode )
 			if match:
@@ -610,7 +610,7 @@ class shell_mgr:
 					return True
 			### Match Bonn shellcode
 			if self.displayShellCode:
-				print "starting Bonn matching ..."
+				print("starting Bonn matching ...")
 				stdout.flush()
 			match = self.decodersDict['bonn'].search( self.shellcode )
 			if match:
@@ -623,7 +623,7 @@ class shell_mgr:
 					return True
 			### Match Unnamed BindShellcode1
 			if self.displayShellCode:
-				print "starting Unnamed BindShellcode1 matching ..."
+				print("starting Unnamed BindShellcode1 matching ...")
 				stdout.flush()
 			match = self.decodersDict['bindshell1'].search( self.shellcode )
 			if match:
@@ -641,7 +641,7 @@ class shell_mgr:
 				return True
 			### Match Unnamed BindShellcode2
 			if self.displayShellCode:
-				print "starting Unnamed BindShellcode2 matching ..."
+				print("starting Unnamed BindShellcode2 matching ...")
 				stdout.flush()
 			match = self.decodersDict['bindshell2'].search( self.shellcode )
 			if match:
@@ -659,7 +659,7 @@ class shell_mgr:
 				return True
 			### Match Unnamed BindShellcode3
 			if self.displayShellCode:
-				print "starting Unnamed BindShellcode3 matching ..."
+				print("starting Unnamed BindShellcode3 matching ...")
 				stdout.flush()
 			match = self.decodersDict['bindshell3'].search( self.shellcode2 )
 			if match:
@@ -677,7 +677,7 @@ class shell_mgr:
 				return True
 			### Match Unnamed BindShellcode4
 			if self.displayShellCode:
-				print "starting Unnamed BindShellcode4 matching ..."
+				print("starting Unnamed BindShellcode4 matching ...")
 				stdout.flush()
 			match = self.decodersDict['bindshell4'].search( self.shellcode )
 			if match:
@@ -695,7 +695,7 @@ class shell_mgr:
 				return True
 			### Match Unnamed BindShellcode5
 			if self.displayShellCode:
-				print "starting Unnamed BindShellcode5 matching ..."
+				print("starting Unnamed BindShellcode5 matching ...")
 				stdout.flush()
 			match = self.decodersDict['bindshell5'].search( self.shellcode2 )
 			if match:
@@ -713,7 +713,7 @@ class shell_mgr:
 				return True
 			### Match Unnamed BindShellcode6
 			if self.displayShellCode:
-				print "starting Unnamed BindShellcode6 matching ..."
+				print("starting Unnamed BindShellcode6 matching ...")
 				stdout.flush()
 			match = self.decodersDict['bindshell6'].search( self.shellcode2 )
 			if match:
@@ -731,7 +731,7 @@ class shell_mgr:
 				return True
 			### Match Unnamed AlphaNumeric Shellcode
 			if self.displayShellCode:
-				print "starting Base64Encoded PexAlphaNumeric matching ..."
+				print("starting Base64Encoded PexAlphaNumeric matching ...")
 				stdout.flush()
 			match = self.decodersDict['alphaNum'].search( self.shellcode )
 			if match:
@@ -750,7 +750,7 @@ class shell_mgr:
 					pass
 			### Unnamed Plain URL Alpha
 			if self.displayShellCode:
-				print "starting Base64Encoded AlphaNumeric plain URL matching ..."
+				print("starting Base64Encoded AlphaNumeric plain URL matching ...")
 				stdout.flush()
 			match = self.decodersDict['alphaNum2'].search( self.shellcode )
 			if match:
@@ -765,7 +765,7 @@ class shell_mgr:
 					pass
 			### Match Alpha2 zero tolerance Shellcode
 			if self.displayShellCode:
-				print "starting Alpha2 zero tolerance matching ..."
+				print("starting Alpha2 zero tolerance matching ...")
 				stdout.flush()
 			match = self.decodersDict['alpha2endchar'].search( self.shellcode )
 			if match:
@@ -781,7 +781,7 @@ class shell_mgr:
 						return True
 			### Match Bergheim shellcode
 			if self.displayShellCode:
-				print "starting Bergheim matching ..."
+				print("starting Bergheim matching ...")
 				stdout.flush()
 			match = self.decodersDict['bergheim'].search( self.shellcode )
 			if match:
@@ -798,7 +798,7 @@ class shell_mgr:
 		except:
 			f = StringIO()
 			traceback.print_exc(file=f)
-			print f.getvalue()
+			print(f.getvalue())
 			exit(0)
 		return False
 
@@ -896,13 +896,13 @@ class shell_mgr:
 		if payloadSize % 2 != 0:
 			payloadSize -= 1
 		decodedMessage = {}
-		for i in xrange(0, payloadSize, 2):
+		for i in range(0, payloadSize, 2):
 			decodedMessage[i] = '\x90'
 			lowBit = (unpack('B', payload[i])[0] - 1) ^ 0x41
 			highBit = unpack('B', payload[i+1])[0] & 0x0f
 			resultBit = lowBit | (highBit << 4)
 			decodedMessage[i/2] = pack('B',resultBit)
-		dec_shellcode = "".join(decodedMessage.values())
+		dec_shellcode = "".join(list(decodedMessage.values()))
 
 		m = self.decodersDict['pexalphanum_bindport'].search( dec_shellcode )
 		if m:
@@ -933,7 +933,7 @@ class shell_mgr:
 		if length % 2 != 0:
 			length -= 1
 		decodedMessage = {}
-		for i in xrange(0, length, 2):
+		for i in range(0, length, 2):
 			decodedMessage[i] = '\x90'
 			first = unpack('B', payload[i])[0]
 			second = unpack('B', payload[i+1])[0]
@@ -944,7 +944,7 @@ class shell_mgr:
 			A = (D ^ E)
 			resultBit = (A << 4) + B
 			decodedMessage[i/2] = pack('B',resultBit)
-		decoded_shellcode = "".join(decodedMessage.values())
+		decoded_shellcode = "".join(list(decodedMessage.values()))
 		### connectback shell (reverse shell)
 		match = self.decodersDict['alpha2connback'].search( decoded_shellcode )
 		if match:
@@ -1814,7 +1814,7 @@ class shell_mgr:
 				fp.write(file_data)
 				fp.close()
 				self.log_obj.log("(%s) no match, writing hexdump (%s :%s) - %s" % (self.attIP, digest, len(file_data), self.resultSet['vulnname']), 9, "warn", True, True)
-			except IOError, e:
+			except IOError as e:
 				self.log_obj.log("(%s) failed writing hexdump (%s) (%s :%s) - %s" % (self.attIP, e, digest, len(file_data), self.resultSet['vulnname']), 9, "crit", True, True)
 				return False
 		return True
@@ -1826,7 +1826,7 @@ class shell_mgr:
 		dec_shellcode -- decoded shellcode (default None, i.e. use global self.shellcode)
 		"""
 		if self.displayShellCode:
-			print "starting DirectFile matching ..."
+			print("starting DirectFile matching ...")
 			stdout.flush()
 		if not dec_shellcode:
 			match = self.decodersDict['directfile'].search( self.shellcode )
@@ -1854,7 +1854,7 @@ class shell_mgr:
 			else:
 				match = self.decodersDict['url'].search( dec_shellcode )
 			if self.displayShellCode:
-				print "starting AnyURL matching ..."
+				print("starting AnyURL matching ...")
 				stdout.flush()
 			if match:
 				#self.write_hexdump(self.shellcode, "http")
@@ -1977,7 +1977,7 @@ class shell_mgr:
 		"""
 		try:
 			if self.displayShellCode:
-				print "starting embedded TFTP command matching ..."
+				print("starting embedded TFTP command matching ...")
 				stdout.flush()
 			if not dec_shellcode:
 				ShellcodeToAnalyse = self.shellcode
@@ -2017,7 +2017,7 @@ class shell_mgr:
 		try:
 			### Match Plain FTP CMD 3 shellcode
 			if self.displayShellCode:
-				print "starting Plain FTP CMD 3 Shell matching ..."
+				print("starting Plain FTP CMD 3 Shell matching ...")
 				stdout.flush()
 			if not dec_shellcode:
 				ShellcodeToAnalyse = self.shellcode
@@ -2115,7 +2115,7 @@ class shell_mgr:
 		try:
 			### Match Plain FTP CMD Shell shellcode
 			if self.displayShellCode:
-				print "starting Plain FTP CMD Shell matching ..."
+				print("starting Plain FTP CMD Shell matching ...")
 				stdout.flush()
 			match = self.decodersDict['ftpcmd'].search(self.shellcode)
 			if match:
@@ -2151,7 +2151,7 @@ class shell_mgr:
 				return True
 			### Match Plain FTP CMD 2 Shell shellcode
 			if self.displayShellCode:
-				print "starting Plain FTP CMD 2 Shell matching ..."
+				print("starting Plain FTP CMD 2 Shell matching ...")
 				stdout.flush()
 			match = self.decodersDict['ftpcmd2'].search(self.shellcode)
 			if match:
@@ -2202,7 +2202,7 @@ class shell_mgr:
 		try:
 			### Match Plain TFTP 1 CMD Shell shellcode
 			if self.displayShellCode:
-				print "starting Plain TFTP 1 CMD Shell matching ..."
+				print("starting Plain TFTP 1 CMD Shell matching ...")
 				stdout.flush()
 			if not dec_shellcode:
 				match = self.decodersDict['tftp1'].search(self.shellcode)
@@ -2234,7 +2234,7 @@ class shell_mgr:
 				return True
 			### Match Plain TFTP CMD Shell shellcode
 			if self.displayShellCode:
-				print "starting Plain TFTP 2 CMD Shell matching ..."
+				print("starting Plain TFTP 2 CMD Shell matching ...")
 				stdout.flush()
 			if not dec_shellcode:
 				match = self.decodersDict['tftp'].search(self.shellcode)

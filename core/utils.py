@@ -79,7 +79,7 @@ class utilities(object):
 		startIP = rangeStr[0]
 		stopIP = rangeStr[1]
 		curIP = startIP
-		curIPSplitted = map(int, curIP.split('.'))
+		curIPSplitted = list(map(int, curIP.split('.')))
 		invalid = False
 		self.resultIPlist.append(curIP)
 		while curIP!=stopIP and not invalid:
@@ -109,7 +109,7 @@ class utilities(object):
 		if diff1==0:
 			startip = ip-diff1
 			numHosts = pow(2,diff2)
-			for i in xrange(numHosts):
+			for i in range(numHosts):
 				self.resultIPlist.append(socket.inet_ntoa(struct.pack('>L', startip+i)))
 		else:
 			self.resultIPlist.append(socket.inet_ntoa(struct.pack('>L', ip)))

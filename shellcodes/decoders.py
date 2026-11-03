@@ -255,16 +255,16 @@ class decoders:
 			empty += " "
 
 		if type=="debug":
-			print "\033[0;34m%s.::[Amun - Decoder] %s ::.\033[0m" % (empty, message)
+			print("\033[0;34m%s.::[Amun - Decoder] %s ::.\033[0m" % (empty, message))
 		elif type=="warn":
-			print "\033[0;33m%s.::[Amun - Decoder] %s ::.\033[0m" % (empty, message)
+			print("\033[0;33m%s.::[Amun - Decoder] %s ::.\033[0m" % (empty, message))
 		elif type=="info":
-			print "\033[0;32m%s.::[Amun - Decoder] %s ::.\033[0m" % (empty, message)
+			print("\033[0;32m%s.::[Amun - Decoder] %s ::.\033[0m" % (empty, message))
 		elif type=="crit":
-			print "\033[0;31m%s.::[Amun - Decoder] %s ::.\033[0m" % (empty, message)
+			print("\033[0;31m%s.::[Amun - Decoder] %s ::.\033[0m" % (empty, message))
 		elif type=="fade":
-			print "\033[0;37m%s.::[Amun - Decoder] %s ::.\033[0m" % (empty, message)
+			print("\033[0;37m%s.::[Amun - Decoder] %s ::.\033[0m" % (empty, message))
 		elif type=="div":
-			print "\033[0;36m%s.::[Amun - Decoder] %s ::.\033[0m" % (empty, message)
+			print("\033[0;36m%s.::[Amun - Decoder] %s ::.\033[0m" % (empty, message))
 		else:
-			print "\033[0m%s.::[Amun - Decoder] %s ::.\033[0m" % (empty, message)
+			print("\033[0m%s.::[Amun - Decoder] %s ::.\033[0m" % (empty, message))

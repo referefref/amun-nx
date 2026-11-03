@@ -16,7 +16,7 @@ except ImportError:
 	pass
 
 import asynchat
-import StringIO
+import io
 import traceback
 import time
 import socket
@@ -75,12 +75,12 @@ class amun_reqhandler(asynchat.async_chat):
 		vuln_modulList = {}
 		try:
 			v_modules = self.vuln_modules[str(self.own_port)]
-			for modkey in v_modules.keys():
+			for modkey in list(v_modules.keys()):
 				init_mod = v_modules[modkey]
 				vuln_modulList[len(vuln_modulList)] = init_mod.vuln()
 			item = (int(time.time()), self.socket_object, vuln_modulList)
 			self.currentConnections[self.identifier] = item
-		except KeyError, e:
+		except KeyError as e:
 			pass
 		return vuln_modulList
 
@@ -90,9 +90,9 @@ class amun_reqhandler(asynchat.async_chat):
 
 	def delete_existing_connection(self):
 		try:
-			if self.currentSockets.has_key(self.identifier):
+			if self.identifier in self.currentSockets:
 				del self.currentSockets[self.identifier]
-			if self.currentConnections.has_key(self.identifier):
+			if self.identifier in self.currentConnections:
 				item = self.currentConnections[self.identifier]
 				del self.currentConnections[self.identifier]
 				if len(item[2])>0:
@@ -109,7 +109,7 @@ class amun_reqhandler(asynchat.async_chat):
 										result['vuln_modul'],
 										int(time.time()),
 										resEntry)
-								if not self.event_dict['exploit'].has_key(self.identifier):
+								if self.identifier not in self.event_dict['exploit']:
 									self.event_dict['exploit'][self.identifier] = event_item
 								### attach to download list
 								self.handle_download(resEntry)
@@ -136,7 +136,7 @@ class amun_reqhandler(asynchat.async_chat):
 				self.origin_socket.connect( (remote_ip, self.own_port) )
 			self.origin_socket.setblocking(0)
 			return True
-		except socket.error, e:
+		except socket.error as e:
 			self.log_obj.log("proxy connection setup failed: %s" % (e), 6, "crit", True, True)
 			self.handle_close()
 			return False
@@ -168,7 +168,7 @@ class amun_reqhandler(asynchat.async_chat):
 			(self.remote_ip, self.remote_port) = socket_object.getpeername()
 			(self.own_ip, self.own_port) = socket_object.getsockname()
 			self.identifier = "%s%s%s%s" % (self.remote_ip,self.remote_port,self.own_ip,self.own_port)
-		except socket.error, e:
+		except socket.error as e:
 			### 107: Transport endpoint is not connected
 			if e[0]==107:
 				self.log_obj.log("Transport endpoint is not connected", 6, "crit", False, True)
@@ -194,7 +194,7 @@ class amun_reqhandler(asynchat.async_chat):
 			self.vuln_modules = vuln_modules
 			self.random_reply = self.create_random_reply()
 			### used sockets for timeout in amun server
-			if not self.currentSockets.has_key(self.identifier):
+			if self.identifier not in self.currentSockets:
 				self.set_new_socket_connection()
 			### nat or real ip
 			if config_dict['ftp_nat_ip']!="None":
@@ -202,20 +202,20 @@ class amun_reqhandler(asynchat.async_chat):
 			else:
 				self.ownIP = self.own_ip
 			### initial connection event
-			if not event_dict['initial_connections'].has_key(self.identifier):
+			if self.identifier not in event_dict['initial_connections']:
 				event_dict['initial_connections'][self.identifier] = [self.remote_ip, self.remote_port, self.own_ip, self.own_port, None, 0, int(time.time())]
 			### handle welcome messages
 			self.handle_welcome()
 
 	def handle_welcome(self):
 		### get registered vuln modules for own_port
-		if not self.currentConnections.has_key(self.identifier):
+		if self.identifier not in self.currentConnections:
 			vuln_modulList = self.set_existing_connection()
 		else:
 			vuln_modulList = self.get_existing_connection()
 
 		welcome_list = []
-		for key in vuln_modulList.keys():
+		for key in list(vuln_modulList.keys()):
 			vuln_module = vuln_modulList[key]
 			welcome_message = vuln_module.getWelcomeMessage()
 			if len(welcome_message)>0:
@@ -230,10 +230,10 @@ class amun_reqhandler(asynchat.async_chat):
 					bytes_sent = self.socket_object.send(rplmess)
 					bytesTosend = bytesTosend - bytes_sent
 					rplmess = rplmess[bytes_sent:]
-			except socket.error, e:
+			except socket.error as e:
 				self.log_obj.log("[handle_welcome] socket error: %s" % (e), 6, "crit", False, True)
 				self.delete_existing_connection()
-				if self.event_dict['initial_connections'].has_key(self.identifier):
+				if self.identifier in self.event_dict['initial_connections']:
 					del self.event_dict['initial_connections'][self.identifier]
 				self.connected = False
 				self.close()
@@ -260,7 +260,7 @@ class amun_reqhandler(asynchat.async_chat):
 		try:
 			try:
 				bytes = self.recv(self.in_buffer_size)
-			except socket.error, e:
+			except socket.error as e:
 				if e[0]=="110":
 					self.log_obj.log("connection timeout", 9, "warn", False, True)
 				else:
@@ -285,8 +285,8 @@ class amun_reqhandler(asynchat.async_chat):
 					shellcodeSet['shellcode'] = "".join(self.proxyShellcode)
 					self.proxyResult = self.shellcode_manager.start_matching( shellcodeSet, self.remote_ip, self.own_ip, self.own_port, self.replace_locals, False )
 					### to XML generator
-					print self.proxyRequests
-					print self.proxyReplies
+					print(self.proxyRequests)
+					print(self.proxyReplies)
 				if not self.proxyTimedOut:
 					try:
 						self.log_obj.log("sending data to proxy host %s (%s)" % (self.proxytoIP, bytesTosend), 6, "debug", False, True)
@@ -294,7 +294,7 @@ class amun_reqhandler(asynchat.async_chat):
 							bytes_send = self.origin_socket.send(self.sendRequest)
 							bytesTosend = bytesTosend - bytes_send
 							self.sendRequest = self.sendRequest[bytes_send:]
-					except socket.error, e:
+					except socket.error as e:
 						self.log_obj.log("sending to proxy/remote host failed %s" % (self.proxytoIP), 6, "crit", False, True)
 						pass
 					while True:
@@ -348,7 +348,7 @@ class amun_reqhandler(asynchat.async_chat):
 								except:
 									break
 							time.sleep(.0001)
-						except socket.error, e:
+						except socket.error as e:
 							if e[0]==11:
 								pass
 							else:
@@ -360,7 +360,7 @@ class amun_reqhandler(asynchat.async_chat):
 				self.sendRequest = ""
 
 			event_item = None
-			if self.currentConnections.has_key(self.identifier):
+			if self.identifier in self.currentConnections:
 				### existing connection
 				vuln_modulList = self.get_existing_connection()
 			else:
@@ -382,7 +382,7 @@ class amun_reqhandler(asynchat.async_chat):
 			if result['shellresult']!="None":
 				for resEntry in result['shellresult']:
 					if resEntry['result']:
-						for key in vuln_modulList.keys():
+						for key in list(vuln_modulList.keys()):
 							del vuln_modulList[key]
 						### create exploit event
 						event_item = (self.remote_ip,
@@ -392,7 +392,7 @@ class amun_reqhandler(asynchat.async_chat):
 								result['vuln_modul'],
 								int(time.time()),
 								resEntry)
-						if not self.event_dict['exploit'].has_key(self.identifier):
+						if self.identifier not in self.event_dict['exploit']:
 							self.event_dict['exploit'][self.identifier] = event_item
 						### attach to download list
 						self.handle_download(resEntry)
@@ -402,7 +402,7 @@ class amun_reqhandler(asynchat.async_chat):
 							self.event_dict['sucexpl_connections'][item_id] = int(time.time())
 						try:
 							self.socket_object.send("\r\n")
-						except socket.error, e:
+						except socket.error as e:
 							pass
 						self.delete_existing_connection()
 						try:
@@ -414,7 +414,7 @@ class amun_reqhandler(asynchat.async_chat):
 						return
 					else:
 						### failed to determine shellcode
-						for key in vuln_modulList.keys():
+						for key in list(vuln_modulList.keys()):
 							del vuln_modulList[key]
 						### create failed exploit event
 						event_item = (self.remote_ip,
@@ -424,7 +424,7 @@ class amun_reqhandler(asynchat.async_chat):
 								result['vuln_modul'],
 								int(time.time()),
 								resEntry)
-						if not self.event_dict['exploit'].has_key(self.identifier):
+						if self.identifier not in self.event_dict['exploit']:
 							self.event_dict['exploit'][self.identifier] = event_item
 						### attach to successful exploit list
 						if self.blocksucexpl == 1:
@@ -432,7 +432,7 @@ class amun_reqhandler(asynchat.async_chat):
 							self.event_dict['sucexpl_connections'][item_id] = int(time.time())
 						try:
 							self.socket_object.send("\r\n")
-						except socket.error, e:
+						except socket.error as e:
 							pass
 						self.delete_existing_connection()
 						try:
@@ -453,7 +453,7 @@ class amun_reqhandler(asynchat.async_chat):
 						while bytesTosend>0:
 							bytes_send = self.socket_object.send(reply_message)
 							bytesTosend = bytesTosend - bytes_send
-					except socket.error, e:
+					except socket.error as e:
 						### client gone
 						self.delete_existing_connection()
 						try:
@@ -555,7 +555,7 @@ class amun_reqhandler(asynchat.async_chat):
 							except:
 								break
 						time.sleep(.0001)
-					except socket.error, e:
+					except socket.error as e:
 						if e[0]==11:
 							pass
 						else:
@@ -567,13 +567,13 @@ class amun_reqhandler(asynchat.async_chat):
 				self.sendRequest = ""
 			### connection finished but modules left
 			if len(vuln_modulList)>0 and len(data)<=0:
-				for key in vuln_modulList.keys():
+				for key in list(vuln_modulList.keys()):
 					modul = vuln_modulList[key]
 					self.log_obj.log("%s leaving communication (stage: %s bytes: %s)"\
 							% (modul.getVulnName(),modul.getCurrentStage(),len(data)), 6, "debug", False, True)
 					result['stage_list'].append(modul.getCurrentStage())
 					del vuln_modulList[key]
-				if self.event_dict['initial_connections'].has_key(self.identifier):
+				if self.identifier in self.event_dict['initial_connections']:
 					del self.event_dict['initial_connections'][self.identifier]
 			### modules left?
 			if len(vuln_modulList)<=0 and not self.proxyMode:
@@ -588,14 +588,14 @@ class amun_reqhandler(asynchat.async_chat):
 					pass
 				try:
 					self.socket_object.send("\r\n")
-				except socket.error, e:
+				except socket.error as e:
 					pass
 				self.delete_existing_connection()
 				try:
 					self.shutdown(socket.SHUT_RDWR)
 				except:
 					pass
-				if self.event_dict['initial_connections'].has_key(self.identifier):
+				if self.identifier in self.event_dict['initial_connections']:
 					del self.event_dict['initial_connections'][self.identifier]
 				self.connected = False
 				self.close()
@@ -605,7 +605,7 @@ class amun_reqhandler(asynchat.async_chat):
 
 	def create_random_reply(self):
 		random_reply = []
-		random_reply = [struct.pack("B", random.randint(0,255)) for i in xrange(0,62)]
+		random_reply = [struct.pack("B", random.randint(0,255)) for i in range(0,62)]
 		return random_reply
 
 	def handle_vulnerabilities(self, data, vuln_modulList):
@@ -618,7 +618,7 @@ class amun_reqhandler(asynchat.async_chat):
 			result['vuln_modul'] = "None"
 			result['stage_list'] = []
 
-			for key in vuln_modulList.keys():
+			for key in list(vuln_modulList.keys()):
 				vuln_modul = vuln_modulList[key]
 				vulnResult = vuln_modul.incoming(data, len(data), self.remote_ip, self.divLogger['vulnerability'], self.random_reply, self.ownIP)
 				### not accepted -> remove from vuln list
@@ -664,7 +664,7 @@ class amun_reqhandler(asynchat.async_chat):
 							self.shutdown(socket.SHUT_RDWR)
 						except:
 							pass
-						if self.event_dict['initial_connections'].has_key(self.identifier):
+						if self.identifier in self.event_dict['initial_connections']:
 							del self.event_dict['initial_connections'][self.identifier]
 						self.connected = False
 						self.close()
@@ -678,7 +678,7 @@ class amun_reqhandler(asynchat.async_chat):
 		except KeyboardInterrupt:
 			raise
 		except:
-			print "Port: %s" % (self.own_port)
+			print("Port: %s" % (self.own_port))
 			raise
 
 	def setMyDoomShellResult(self, downURL):
@@ -708,7 +708,7 @@ class amun_reqhandler(asynchat.async_chat):
 
 	def handle_download(self, result):
 		### attach to download events
-		if not self.event_dict['download'].has_key(result['dlident']):
+		if result['dlident'] not in self.event_dict['download']:
 			self.event_dict['download'][result['dlident']] = result
 
 	def createFileEvent(self, file_data, file_data_length, vulnname, downURL):

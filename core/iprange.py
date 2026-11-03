@@ -11,36 +11,36 @@ You should have received a copy of the GNU General Public License along with thi
 
 
 try:
-	import psyco ; psyco.full()
-	from psyco.classes import *
+        import psyco ; psyco.full()
+        from psyco.classes import *
 except ImportError:
-	pass
+        pass
 
 class IPRange:
         def __init__(self, net):
-		try:
-	                self.net = net
-        	        (self.ip, self.pattern) = net.split("/")
-                	self.ip = self.dottedQuadToNum(self.ip)
-	                if self.pattern == "" or self.pattern == "0":
-        	                self.pattern = ~0
-                	else:
-                        	self.pattern = ~int("1" * (32 - int(self.pattern)), 2)
-		except KeyboardInterrupt:
-			raise
+                try:
+                        self.net = net
+                        (self.ip, self.pattern) = net.split("/")
+                        self.ip = self.dottedQuadToNum(self.ip)
+                        if self.pattern == "" or self.pattern == "0":
+                                self.pattern = ~0
+                        else:
+                                self.pattern = ~int("1" * (32 - int(self.pattern)), 2)
+                except KeyboardInterrupt:
+                        raise
 
         def contains(self, tip):
-		try:
-	                return self.ip & self.pattern == self.dottedQuadToNum(tip) & self.pattern
-		except KeyboardInterrupt:
-			raise
+                try:
+                        return self.ip & self.pattern == self.dottedQuadToNum(tip) & self.pattern
+                except KeyboardInterrupt:
+                        raise
 
         def dottedQuadToNum(self,ip):
-		try:
-	                l = map(int, ip.split('.'))
-       		        addr = 0
-               		for byte in l:
-                       		addr = 256*addr+byte
-	                return long(addr)
-		except KeyboardInterrupt:
-			raise
+                try:
+                        l = list(map(int, ip.split('.')))
+                        addr = 0
+                        for byte in l:
+                                addr = 256*addr+byte
+                        return int(addr)
+                except KeyboardInterrupt:
+                        raise

@@ -23,9 +23,9 @@ def write_md5(file_data, file_data_length):
 		fp = open(filename, 'a+')
 		fp.write(file_data)
 		fp.close()
-		print "successfull write: %s (size: %s)" % (filename, file_data_length)
+		print("successfull write: %s (size: %s)" % (filename, file_data_length))
 	else:
-		print "file exists"
+		print("file exists")
 
 def check_file(data, data_length):
 	i = 0
@@ -56,7 +56,7 @@ def check_file(data, data_length):
 			break
 		i += 1
 	if i>0 and found:
-		print "cutting header (size: %i)" % (i)
+		print("cutting header (size: %i)" % (i))
 		data = data[i:]
 		data_length = len(data)
 	return data,data_length
@@ -64,12 +64,12 @@ def check_file(data, data_length):
 
 if __name__ == "__main__":
 	filename = sys.argv[1]
-	print "reading file %s ... " % (filename),
+	print("reading file %s ... " % (filename), end=' ')
 	fp = open(filename, 'r')
 	content = "".join(fp.readlines())
 	fp.close()
-	print "done."
+	print("done.")
 	content_len = len(content)
-	print "checking file ... "
+	print("checking file ... ")
 	(newfile, newlen) = check_file(content, content_len)
 	write_md5(newfile, newlen)

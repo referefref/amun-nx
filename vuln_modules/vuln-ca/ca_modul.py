@@ -79,7 +79,7 @@ class vuln:
 			return resultSet
 		except KeyboardInterrupt:
 			raise
-		except StandardError, e:
-			print e
+		except Exception as e:
+			print(e)
 		except:
-			print "CA fatal error"
+			print("CA fatal error")

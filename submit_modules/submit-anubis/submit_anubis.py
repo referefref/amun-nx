@@ -22,8 +22,8 @@ from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
 from email.MIMEBase import MIMEBase
 
-import httplib
-import urlparse
+import http.client
+import urllib.parse
 import socket
 
 class submit(object):
@@ -69,16 +69,16 @@ class submit(object):
 					self.log_obj.log("could not submit sample to anubis: %s %s" % (response.status, response.getheader("taskid", "DEFAULT")), 12, "crit", Log=True, display=True)
 		except KeyboardInterrupt:
 			raise
-		except StandardError, e:
+		except Exception as e:
 			self.log_obj.log("could not submit sample to anubis: %s" % (e), 12, "crit", Log=True, display=True)
 		except Exception:
 			self.log_obj.log("could not submit sample to anubis", 12, "crit", Log=True, display=True)
 			import traceback
 			import sys
-			import StringIO
-			f = StringIO.StringIO()
+			import io
+			f = io.StringIO()
 			traceback.print_exc(file=f)
-			print f.getvalue()
+			print(f.getvalue())
 			sys.exit(1)
 
 	def httprequest(self, postdata):
@@ -116,18 +116,18 @@ class submit(object):
 		message.attach(part)
 		message.epilogue = ""
 		headerBlock, body = message.as_string().split("\n\n",1)
-		for hName, hValue in message.items():
+		for hName, hValue in list(message.items()):
 			headers[hName] = hValue
 		### Make the HTTP request and get the response.
 		### Precondition: 'url', 'method', 'headers', 'body' are all setup properly.
-		scheme, netloc, path, parameters, query, fragment = urlparse.urlparse(self.anubisURL)
+		scheme, netloc, path, parameters, query, fragment = urllib.parse.urlparse(self.anubisURL)
 		if parameters or query or fragment:
 			raise Exception("Unexpected URL: parameters=%r, query=%r, fragment=%r" % (parameters, query, fragment))
 		try:
-			conn = httplib.HTTPConnection(netloc)
+			conn = http.client.HTTPConnection(netloc)
 			conn.request("POST", path, body, headers)
 			response = conn.getresponse()
-		except socket.error, e:
+		except socket.error as e:
 			response = ConnRes(404, e)
 		return response
 

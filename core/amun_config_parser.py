@@ -79,7 +79,7 @@ class AmunConfigParser:
 				fp.close()
 				self.contentList = content.split('\n')
 				return True, None
-			except IOError, e:
+			except IOError as e:
 				self.contentList = None
 				return False, e
 		else:

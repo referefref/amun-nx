@@ -158,7 +158,7 @@ class vuln:
 			return resultSet
 		except KeyboardInterrupt:
 			raise
-		except StandardError, e:
-			print e
+		except Exception as e:
+			print(e)
 		except:
-			print "FTPD fatal error"
+			print("FTPD fatal error")

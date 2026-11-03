@@ -5,7 +5,7 @@ import re
 
 
 if __name__ == '__main__':
-	print "Try to get all assigned IP addresses:"
+	print("Try to get all assigned IP addresses:")
 	try:
 		t = re.compile("inet (\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/");
 		counter = 0
@@ -22,7 +22,7 @@ if __name__ == '__main__':
 				counter += 1
 			line = child.fromchild.readline()
 		child.wait()
-		print counter
-		print ipListe[0]
+		print(counter)
+		print(ipListe[0])
 	except KeyboardInterrupt:
 		pass
